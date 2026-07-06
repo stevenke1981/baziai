@@ -53,4 +53,37 @@
 
 ## 實際測試結果
 
-（將在執行後更新）
+### Phase 5 — 單元測試 (2026-07-06)
+
+| 測試套件 | 測試案例 | 通過 | 失敗 | 結果 |
+|---------|---------|------|------|------|
+| getYearPillar | 4 | 4 | 0 | ✅ |
+| getDayPillar | 4 | 4 | 0 | ✅ |
+| getMonthPillar | 3 | 3 | 0 | ✅ |
+| getHourPillar | 3 | 3 | 0 | ✅ |
+| getNayin | 4 | 4 | 0 | ✅ |
+| getSexagenaryIndexFast | 3 | 3 | 0 | ✅ |
+| calculateElementStrength | 3 | 3 | 0 | ✅ |
+| getFavoriteElement | 3 | 3 | 0 | ✅ |
+| calculateBazi | 4 | 4 | 0 | ✅ |
+| isValidDate | 5 | 5 | 0 | ✅ |
+| **Total** | **36** | **36** | **0** | **✅** |
+
+### Phase 9 — Lint 檢查 (2026-07-06)
+
+| 類別 | 數量 | 狀態 |
+|------|------|------|
+| Errors | 0 | ✅ |
+| Warnings | 131 | ⚠️ (prefer-const/no-unused-vars) |
+
+### Git 提交記錄
+
+```
+789ef82 Fix lint errors (hasOwnProperty → Object.hasOwn)
+51250ab Phase 8: PWA manifest + meta tags + GPU 提示
+06d215c Phase 7: CSS 拆分 + DOM 快取優化
+a9cab58 Phase 6: 長函數拆分 + 節氣快取 + 納音優化
+74e2c8b Phase 5: 單元測試 (Vitest)
+044cba9 Phase 2-4: ES Module + data/store/error modules
+fbbc843 Phase 1: 基礎建設初始化
+```
