@@ -49,6 +49,8 @@ import './error.js';
         // 分頁
         tabBtns: document.querySelectorAll('.tab-btn'),
         tabContents: document.querySelectorAll('.tab-content'),
+        tabGeju: document.getElementById('tabGeju'),
+        gejuRoot: document.getElementById('gejuRoot'),
         lunmingRoot: document.getElementById('lunmingRoot'),
         lunming2Root: document.getElementById('lunming2Root'),
         gejuRefRoot: document.getElementById('gejuRefRoot'),
@@ -248,7 +250,7 @@ import './error.js';
         // 如果切換到格局參考頁
         if (tabId === 'gejuref' && typeof window.renderGejuRef === 'function') {
             setTimeout(() => {
-                window.renderGejuRef(document.getElementById('gejuRefRoot'));
+                window.renderGejuRef(el.gejuRefRoot);
             }, 50);
         }
     }
@@ -315,8 +317,7 @@ import './error.js';
                 }
                 
                 // 若目前顯示的是格局分頁，自動更新
-                const gejuTab = document.getElementById('tabGeju');
-                if (gejuTab && gejuTab.classList.contains('active') && typeof renderGejuTab === 'function') {
+                if (el.tabGeju && el.tabGeju.classList.contains('active') && typeof renderGejuTab === 'function') {
                     renderGejuTab(result);
                 }
                 
@@ -694,7 +695,7 @@ import './error.js';
     
     /** 渲染格局分析 */
     function renderGejuTab(baziResult) {
-        const root = document.getElementById('gejuRoot');
+        const root = el.gejuRoot;
         if (!root) return;
         
         if (!baziResult || !baziResult.pillars || baziResult.pillars.length < 3) {

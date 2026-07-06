@@ -1,0 +1,43 @@
+/* ============================================================
+   base.css — 變數與全域設定
+   ============================================================ */
+/* === CSS 變數 === */
+:root {
+    --primary: #8B0000;          /* 暗紅色（中國傳統色） */
+    --primary-light: #C41E3A;    /* 亮紅色 */
+    --secondary: #B8860B;        /* 暗金色 */
+    --secondary-light: #DAA520;  /* 金色 */
+    --bg: #1a1410;               /* 深色背景 */
+    --bg-card: #2a221c;          /* 卡片背景 */
+    --bg-card-hover: #332b25;
+    --text: #e8ddd0;             /* 米白文字 */
+    --text-muted: #a09080;       /* 次要文字 */
+    --border: #3d322a;           /* 邊框色 */
+    --border-light: #5a4a3a;
+    
+    /* 五行顏色 */
+    --wood: #2e7d32;             /* 木 - 綠色 */
+    --fire: #d32f2f;             /* 火 - 紅色 */
+    --earth: #8d6e3f;            /* 土 - 棕色 */
+    --metal: #bdbdbd;            /* 金 - 白色/銀色 */
+    --water: #1565c0;            /* 水 - 藍色 */
+    
+    --font-cn: 'Microsoft JhengHei', 'Noto Sans TC', 'Source Han Sans TC', 'PingFang TC', sans-serif;
+    --radius: 10px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+/* === 全域設定 === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-cn);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+}
