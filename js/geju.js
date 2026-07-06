@@ -381,14 +381,14 @@ function classifyPattern(tenGodUsed, finalGeju) {
     if (tenGodUsed === '比肩') { updatedGeju = '建祿格'; }
     else if (tenGodUsed === '劫財') { updatedGeju = '月刃格'; }
 
-    const isNormal = NORMAL_PATTERNS.hasOwnProperty(updatedGeju);
+    const isNormal = Object.hasOwn(NORMAL_PATTERNS, updatedGeju);
     let info, cat, ptype;
 
     if (isNormal) {
         info = NORMAL_PATTERNS[updatedGeju];
         cat = '普通格局（正格）';
         ptype = '正格';
-    } else if (SPECIAL_PATTERNS.hasOwnProperty(updatedGeju)) {
+    } else if (Object.hasOwn(SPECIAL_PATTERNS, updatedGeju)) {
         info = SPECIAL_PATTERNS[updatedGeju];
         cat = '特殊格局';
         ptype = '特殊格';
