@@ -1,0 +1,2284 @@
+/* ============================================================
+   style.css — 八字算命網站 樣式表
+   ============================================================ */
+
+/* === CSS 變數 === */
+:root {
+    --primary: #8B0000;          /* 暗紅色（中國傳統色） */
+    --primary-light: #C41E3A;    /* 亮紅色 */
+    --secondary: #B8860B;        /* 暗金色 */
+    --secondary-light: #DAA520;  /* 金色 */
+    --bg: #1a1410;               /* 深色背景 */
+    --bg-card: #2a221c;          /* 卡片背景 */
+    --bg-card-hover: #332b25;
+    --text: #e8ddd0;             /* 米白文字 */
+    --text-muted: #a09080;       /* 次要文字 */
+    --border: #3d322a;           /* 邊框色 */
+    --border-light: #5a4a3a;
+    
+    /* 五行顏色 */
+    --wood: #2e7d32;             /* 木 - 綠色 */
+    --fire: #d32f2f;             /* 火 - 紅色 */
+    --earth: #8d6e3f;            /* 土 - 棕色 */
+    --metal: #bdbdbd;            /* 金 - 白色/銀色 */
+    --water: #1565c0;            /* 水 - 藍色 */
+    
+    --font-cn: 'Microsoft JhengHei', 'Noto Sans TC', 'Source Han Sans TC', 'PingFang TC', sans-serif;
+    --radius: 10px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+/* === 全域設定 === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-cn);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* === 背景裝飾 === */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: 
+        radial-gradient(ellipse at 20% 50%, rgba(139,0,0,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 50%, rgba(184,134,11,0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* === 頁首 === */
+.header {
+    text-align: center;
+    padding: 40px 20px 10px;
+    position: relative;
+}
+
+.header::after {
+    content: '☰ ☰ ☰';
+    display: block;
+    color: var(--secondary);
+    font-size: 14px;
+    letter-spacing: 8px;
+    margin-top: 4px;
+    opacity: 0.4;
+}
+
+/* === 分頁導航 === */
+.tab-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-top: 20px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 36px;
+    font-size: 1.05rem;
+    font-family: var(--font-cn);
+    color: var(--text-muted);
+    cursor: pointer;
+    letter-spacing: 4px;
+    position: relative;
+    transition: all 0.3s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+    color: var(--text);
+}
+
+.tab-btn.active {
+    color: var(--secondary-light);
+    border-bottom-color: var(--secondary-light);
+    font-weight: 600;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.header h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--secondary-light);
+    text-shadow: 0 0 20px rgba(218,165,32,0.3);
+    letter-spacing: 6px;
+}
+
+.header h1 .sub {
+    font-size: 1rem;
+    color: var(--text-muted);
+    letter-spacing: 8px;
+    display: block;
+    font-weight: 300;
+    margin-top: 4px;
+}
+
+.header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-top: 8px;
+    letter-spacing: 2px;
+}
+
+/* === 主容器 === */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 16px 60px;
+}
+
+/* === 卡片 === */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    border-color: var(--border-light);
+    box-shadow: var(--shadow);
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--secondary-light);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-title::before {
+    content: '◆';
+    font-size: 0.7rem;
+    color: var(--secondary);
+}
+
+/* === 表單 === */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.form-group select,
+.form-group input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 1rem;
+    font-family: var(--font-cn);
+    transition: border-color 0.2s;
+    outline: none;
+    width: 100%;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px rgba(184,134,11,0.15);
+}
+
+.form-group select option {
+    background: var(--bg-card);
+    color: var(--text);
+}
+
+.calendar-toggle {
+    display: flex;
+    gap: 0;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.calendar-toggle button {
+    flex: 1;
+    padding: 10px 16px;
+    background: var(--bg);
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-family: var(--font-cn);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+}
+
+.calendar-toggle button.active {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 600;
+}
+
+.calendar-toggle button:not(.active):hover {
+    background: var(--bg-card-hover);
+    color: var(--text);
+}
+
+.btn-calculate {
+    grid-column: 1 / -1;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.15rem;
+    font-weight: 600;
+    font-family: var(--font-cn);
+    letter-spacing: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 6px;
+}
+
+.btn-calculate:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(139,0,0,0.4);
+}
+
+.btn-calculate:active {
+    transform: translateY(0);
+}
+
+/* === 八字結果 === */
+.bazi-display {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.pillar-card {
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-card) 100%);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 10px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.pillar-card:hover {
+    border-color: var(--secondary);
+    transform: translateY(-2px);
+}
+
+.pillar-name {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.pillar-stem {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    line-height: 1.2;
+}
+
+.pillar-branch {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    line-height: 1.2;
+    margin-top: 2px;
+}
+
+.pillar-element {
+    font-size: 0.75rem;
+    margin-top: 6px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.pillar-ten-god {
+    font-size: 0.8rem;
+    color: var(--secondary-light);
+    margin-top: 6px;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.pillar-nayin {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* 五行顏色 */
+.element-wood { color: var(--wood); }
+.element-fire { color: var(--fire); }
+.element-earth { color: #b8956a; }
+.element-metal { color: var(--metal); }
+.element-water { color: var(--water); }
+
+.bg-element-wood { background: rgba(46,125,50,0.15); color: var(--wood); border-color: rgba(46,125,50,0.3); }
+.bg-element-fire { background: rgba(211,47,47,0.15); color: var(--fire); border-color: rgba(211,47,47,0.3); }
+.bg-element-earth { background: rgba(141,110,63,0.15); color: #b8956a; border-color: rgba(141,110,63,0.3); }
+.bg-element-metal { background: rgba(189,189,189,0.15); color: var(--metal); border-color: rgba(189,189,189,0.3); }
+.bg-element-water { background: rgba(21,101,192,0.15); color: var(--water); border-color: rgba(21,101,192,0.3); }
+
+/* === 日主資訊 === */
+.day-master-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(139,0,0,0.1), rgba(184,134,11,0.05));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.day-master-stem {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.day-master-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.day-master-info .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.day-master-info .value {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* === 十神表 === */
+.ten-god-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.ten-god-table th,
+.ten-god-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.ten-god-table th {
+    background: var(--bg);
+    color: var(--secondary-light);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.ten-god-table td {
+    background: var(--bg-card);
+}
+
+.ten-god-table tr:hover td {
+    background: var(--bg-card-hover);
+}
+
+/* === 五行強度條 === */
+.element-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.element-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.element-bar-label {
+    width: 40px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.element-bar-track {
+    flex: 1;
+    height: 22px;
+    background: var(--bg);
+    border-radius: 11px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid var(--border);
+}
+
+.element-bar-fill {
+    height: 100%;
+    border-radius: 11px;
+    transition: width 1s ease;
+    position: relative;
+}
+
+.element-bar-value {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* === 藏干 === */
+.hidden-stems {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 10px 0;
+}
+
+.hidden-stem-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.hidden-stem-char {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.hidden-stem-ten-god {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.hidden-stem-badge {
+    font-size: 0.6rem;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--text-muted);
+}
+
+/* === 喜用神 === */
+.favorite-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 10px 0;
+}
+
+.favorite-item {
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.favorite-item.favorite {
+    background: rgba(46,125,50,0.1);
+    border-color: var(--wood);
+}
+
+.favorite-item.unfavorite {
+    background: rgba(211,47,47,0.1);
+    border-color: var(--fire);
+}
+
+.favorite-item .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.favorite-item .elements {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 6px;
+}
+
+.favorite-item .desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.analysis-text {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--text);
+    margin: 10px 0;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--secondary);
+}
+
+/* === 大運表 === */
+.luck-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.luck-table th,
+.luck-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.luck-table th {
+    background: var(--bg);
+    color: var(--secondary-light);
+    font-weight: 600;
+}
+
+.luck-table td {
+    background: var(--bg-card);
+}
+
+/* === 摘要區 === */
+.summary-box {
+    background: linear-gradient(135deg, rgba(139,0,0,0.08), rgba(184,134,11,0.05));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    white-space: pre-wrap;
+    line-height: 1.8;
+    font-size: 0.9rem;
+}
+
+/* === 隱藏 === */
+.hidden {
+    display: none !important;
+}
+
+/* === 載入動畫 === */
+.loading {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-muted);
+}
+
+.loading::after {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border);
+    border-top-color: var(--secondary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* === 頁尾 === */
+.footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+}
+
+/* === 響應式設計 === */
+@media (max-width: 600px) {
+    .header h1 {
+        font-size: 1.6rem;
+        letter-spacing: 4px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .bazi-display {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+    }
+    
+    .pillar-stem,
+    .pillar-branch {
+        font-size: 1.6rem;
+    }
+    
+    .pillar-card {
+        padding: 10px 6px;
+    }
+    
+    .favorite-box {
+        grid-template-columns: 1fr;
+    }
+    
+    .day-master-box {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .day-master-info {
+        align-items: center;
+    }
+}
+
+@media (max-width: 400px) {
+    .bazi-display {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* === 列印樣式 === */
+@media print {
+    body {
+        background: #fff;
+        color: #333;
+    }
+    .header h1 { color: #333; }
+    .card { background: #fff; border-color: #ddd; break-inside: avoid; }
+    .btn-calculate, .calendar-toggle { display: none; }
+    .no-print { display: none; }
+}
+
+/* ============================================================
+   論命頁（Lunming）樣式
+   ============================================================ */
+
+/* 論命分析卡片 */
+.lm-analysis-card {
+    border-color: var(--secondary) !important;
+    background: linear-gradient(135deg, rgba(184,134,11,0.08), rgba(139,0,0,0.05)) !important;
+}
+
+.lm-analysis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.lm-analysis-item {
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.lm-analysis-item .lm-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+}
+
+.lm-analysis-item .lm-value {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* 章節折疊 */
+.lm-section {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.lm-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.lm-section-header:hover {
+    background: var(--bg-card-hover);
+}
+
+.lm-section-icon {
+    font-size: 1.1rem;
+}
+
+.lm-arrow {
+    margin-left: auto;
+    font-size: 0.7rem;
+    transition: transform 0.3s;
+    color: var(--text-muted);
+}
+
+.lm-collapsed .lm-arrow {
+    transform: rotate(-90deg);
+}
+
+.lm-section-body {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.lm-collapsed .lm-section-body {
+    display: none;
+}
+
+/* 天干/地支區塊 */
+.lm-stem-block {
+    padding: 12px;
+    margin-bottom: 10px;
+    background: var(--bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--border);
+    transition: all 0.3s;
+}
+
+.lm-stem-block.lm-active {
+    border-left-color: var(--secondary-light);
+    background: linear-gradient(90deg, rgba(184,134,11,0.05), var(--bg));
+}
+
+.lm-stem-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.lm-poem {
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: var(--text);
+    font-style: italic;
+    letter-spacing: 0.5px;
+}
+
+.lm-meaning {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+}
+
+/* 子區塊 */
+.lm-subsection {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    background: var(--bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--border);
+    transition: all 0.3s;
+}
+
+.lm-subsection.lm-active {
+    border-left-color: var(--secondary-light);
+    background: linear-gradient(90deg, rgba(184,134,11,0.05), var(--bg));
+}
+
+.lm-subsection-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.lm-subsection-content {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--text);
+}
+
+/* 高亮動畫 */
+.lm-highlight {
+    animation: lmPulse 1s ease 3;
+    border-color: var(--secondary-light) !important;
+}
+
+@keyframes lmPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(218,165,32,0); }
+    50% { box-shadow: 0 0 15px 2px rgba(218,165,32,0.3); }
+}
+
+/* 響應式 */
+@media (max-width: 600px) {
+    .lm-analysis-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   論命二（Lunming2）量化評分樣式
+   ============================================================ */
+
+/* 總覽區 */
+.lm2-overview {
+    background: linear-gradient(135deg, rgba(139,0,0,0.12), rgba(184,134,11,0.08));
+    border: 1px solid var(--secondary);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.lm2-dm-header {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+}
+
+.lm2-dm-stem {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.lm2-judgment {
+    display: inline-block;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-left: 4px;
+}
+
+.lm2-strong {
+    color: var(--fire);
+    background: rgba(211,47,47,0.15);
+    border: 1px solid rgba(211,47,47,0.3);
+}
+
+.lm2-weak {
+    color: var(--water);
+    background: rgba(21,101,192,0.15);
+    border: 1px solid rgba(21,101,192,0.3);
+}
+
+.lm2-total-score {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+}
+
+.lm2-score-num {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--secondary-light);
+}
+
+/* 四大面向 */
+.lm2-four-aspects {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.lm2-aspect {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.2s;
+}
+
+.lm2-aspect:hover {
+    border-color: var(--border-light);
+    box-shadow: var(--shadow);
+}
+
+.lm2-aspect-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.lm2-aspect-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--secondary-light);
+}
+
+.lm2-aspect-score {
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.lm2-score-very-high { color: var(--fire); }
+.lm2-score-high       { color: var(--secondary-light); }
+.lm2-score-mid        { color: var(--text-muted); }
+.lm2-score-low        { color: #666; }
+
+.lm2-aspect-bar {
+    height: 10px;
+    background: var(--bg);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+}
+
+.lm2-aspect-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.8s ease;
+}
+
+.lm2-fill-very-high { background: linear-gradient(90deg, #d32f2f, #e57373); }
+.lm2-fill-high       { background: linear-gradient(90deg, #B8860B, #DAA520); }
+.lm2-fill-mid        { background: linear-gradient(90deg, #666, #999); }
+.lm2-fill-low        { background: linear-gradient(90deg, #444, #666); }
+
+.lm2-aspect-desc {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.lm2-aspect-note {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* 詳細分數網格 */
+.lm2-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.lm2-detail-item {
+    padding: 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.lm2-detail-item.lm2-total {
+    background: linear-gradient(135deg, rgba(184,134,11,0.1), rgba(139,0,0,0.05));
+    border-color: var(--secondary);
+}
+
+.lm2-detail-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.lm2-detail-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* 對比區 */
+.lm2-compare-box {
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.lm2-compare-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    transition: all 0.2s;
+}
+
+.lm2-compare-row:last-child {
+    border-bottom: none;
+}
+
+.lm2-compare-row.lm2-match {
+    border-left: 3px solid var(--wood);
+}
+
+.lm2-compare-row.lm2-diff {
+    border-left: 3px solid var(--secondary-light);
+}
+
+.lm2-compare-method {
+    padding: 14px 12px;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border);
+}
+
+.lm2-method-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary-light);
+    margin-bottom: 4px;
+}
+
+.lm2-method-desc {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.lm2-compare-result {
+    padding: 14px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.lm2-compare-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.lm2-compare-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-right: 8px;
+}
+
+.lm2-compare-verdict {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    background: rgba(184,134,11,0.05);
+}
+
+/* 響應式 */
+@media (max-width: 600px) {
+    .lm2-four-aspects {
+        grid-template-columns: 1fr;
+    }
+    
+    .lm2-detail-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .lm2-compare-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .lm2-compare-method {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 12px;
+    }
+}
+
+/* ============================================================
+   論命二 — 特殊格局樣式
+   ============================================================ */
+
+/* 特殊格局卡片 */
+.lm2-pattern-card {
+    background: linear-gradient(135deg, rgba(139,0,0,0.08), rgba(184,134,11,0.06)) !important;
+    border-color: var(--secondary) !important;
+}
+
+.lm2-pattern-item {
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    border-left: 4px solid var(--secondary);
+    transition: all 0.2s;
+}
+
+.lm2-pattern-item:last-child {
+    margin-bottom: 0;
+}
+
+.lm2-pattern-item:hover {
+    box-shadow: var(--shadow);
+}
+
+.lm2-pattern-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.lm2-pattern-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 1px;
+}
+
+.lm2-pattern-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--secondary-light);
+}
+
+.lm2-pattern-judgment {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 8px;
+    margin-left: auto;
+}
+
+.lm2-pattern-desc {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.lm2-pattern-analysis {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text);
+    font-style: italic;
+    padding: 6px 10px;
+    background: rgba(184,134,11,0.06);
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+
+.lm2-pattern-advice {
+    font-size: 0.8rem;
+    color: var(--secondary-light);
+    margin-bottom: 6px;
+}
+
+.lm2-pattern-fav {
+    font-size: 0.85rem;
+    color: var(--wood);
+    margin-top: 4px;
+}
+
+.lm2-pattern-unfav {
+    font-size: 0.85rem;
+    color: var(--fire);
+    margin-top: 2px;
+}
+
+.lm2-pattern-condition {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+}
+
+/* 查詢UI */
+.lm2-query-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.lm2-query-input {
+    flex: 1;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-family: var(--font-cn);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.lm2-query-input:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px rgba(184,134,11,0.15);
+}
+
+.lm2-query-input::placeholder {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.lm2-query-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: var(--font-cn);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 2px;
+}
+
+.lm2-query-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139,0,0,0.3);
+}
+
+.lm2-query-result {
+    margin-bottom: 14px;
+}
+
+.lm2-query-hint {
+    padding: 10px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.lm2-query-empty {
+    padding: 16px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-align: center;
+    background: var(--bg);
+    border-radius: 6px;
+}
+
+.lm2-query-count {
+    font-size: 0.85rem;
+    color: var(--secondary-light);
+    margin-bottom: 10px;
+    padding: 6px 0;
+}
+
+/* 格局瀏覽器 */
+.lm2-pattern-browser {
+    margin-top: 10px;
+}
+
+.lm2-browser-title {
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.2s;
+}
+
+.lm2-browser-title:hover {
+    background: var(--bg-card-hover);
+}
+
+.lm2-browser-arrow {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.lm2-browser-body {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    padding: 12px;
+    background: var(--bg);
+}
+
+.lm2-browser-cat {
+    margin-bottom: 12px;
+}
+
+.lm2-browser-cat:last-child {
+    margin-bottom: 0;
+}
+
+.lm2-browser-cat-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--secondary-light);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+}
+
+.lm2-browser-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.lm2-browser-item {
+    padding: 5px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+}
+
+.lm2-browser-item:hover {
+    border-color: var(--secondary);
+    color: var(--secondary-light);
+    background: var(--bg-card-hover);
+}
+
+/* 詳細顯示區 */
+.lm2-detail-area {
+    margin-top: 14px;
+}
+
+.lm2-pattern-detail-card {
+    background: linear-gradient(135deg, rgba(184,134,11,0.08), rgba(139,0,0,0.04));
+    border: 1px solid var(--secondary);
+    border-radius: 8px;
+    padding: 18px;
+}
+
+.lm2-pattern-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.lm2-pattern-detail-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--secondary-light);
+}
+
+.lm2-pattern-detail-aliases {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.lm2-pattern-detail-body {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 10px;
+}
+
+.lm2-pattern-detail-analysis {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--text);
+    font-style: italic;
+    padding: 10px 14px;
+    background: var(--bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--secondary);
+    margin-bottom: 10px;
+}
+
+.lm2-pattern-detail-advice {
+    font-size: 0.85rem;
+    color: var(--secondary-light);
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    background: rgba(184,134,11,0.06);
+    border-radius: 4px;
+}
+
+.lm2-pattern-detail-fav {
+    font-size: 0.9rem;
+    color: var(--wood);
+    margin-top: 6px;
+}
+
+.lm2-pattern-detail-unfav {
+    font-size: 0.9rem;
+    color: var(--fire);
+    margin-top: 3px;
+}
+
+/* 響應式 */
+@media (max-width: 600px) {
+    .lm2-pattern-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .lm2-pattern-judgment {
+        margin-left: 0;
+    }
+    
+    .lm2-query-bar {
+        flex-direction: column;
+    }
+    
+    .lm2-query-btn {
+        width: 100%;
+    }
+}
+
+/* ============================================================
+   格局（Geju）分頁樣式
+   ============================================================ */
+
+/* 格局總覽 */
+.geju-overview {
+    background: linear-gradient(135deg, rgba(139,0,0,0.15), rgba(184,134,11,0.1));
+    border: 1px solid var(--secondary);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.geju-badge {
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+.geju-normal {
+    background: rgba(46,125,50,0.2);
+    color: var(--wood);
+    border: 1px solid rgba(46,125,50,0.3);
+}
+
+.geju-special {
+    background: rgba(211,47,47,0.2);
+    color: var(--fire);
+    border: 1px solid rgba(211,47,47,0.3);
+}
+
+.geju-main-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--secondary-light);
+    text-shadow: 0 0 20px rgba(218,165,32,0.3);
+    letter-spacing: 8px;
+    margin-bottom: 8px;
+}
+
+.geju-method {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+}
+
+.geju-daymaster {
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.geju-dm-stem {
+    color: var(--secondary-light);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.geju-month {
+    color: var(--fire);
+    font-weight: 600;
+}
+
+/* 步驟面板 */
+.geju-steps {
+    margin-bottom: 20px;
+}
+
+.geju-step {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.geju-step.geju-step-match {
+    border-left: 3px solid var(--wood);
+}
+
+.geju-step.geju-step-skip {
+    border-left: 3px solid #666;
+    opacity: 0.7;
+}
+
+.geju-step-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    background: var(--bg);
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.geju-step-header:hover {
+    background: var(--bg-card-hover);
+}
+
+.geju-step-icon {
+    font-size: 1rem;
+}
+
+.geju-step-title {
+    flex: 1;
+}
+
+.geju-step-arrow {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    transition: transform 0.3s;
+}
+
+.geju-step-open .geju-step-arrow {
+    transform: rotate(180deg);
+}
+
+.geju-step-body {
+    padding: 14px 16px;
+    border-top: 1px solid var(--border);
+    display: none;
+}
+
+.geju-step-open .geju-step-body {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.geju-step-desc {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 10px;
+}
+
+.geju-step-result {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: rgba(46,125,50,0.1);
+    border: 1px solid rgba(46,125,50,0.2);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--wood);
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+/* 藏干網格 */
+.geju-hidden-grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+}
+
+.geju-hidden-item {
+    flex: 1;
+    min-width: 100px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.geju-hidden-item:hover {
+    border-color: var(--secondary);
+}
+
+.geju-hidden-stem {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--secondary-light);
+}
+
+.geju-hidden-stem.geju-main-stem {
+    font-size: 2rem;
+    text-shadow: 0 0 10px rgba(218,165,32,0.3);
+}
+
+.geju-hidden-type {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    padding: 1px 8px;
+    border-radius: 8px;
+    background: var(--bg);
+    display: inline-block;
+}
+
+.geju-hidden-ten {
+    font-size: 0.8rem;
+    color: var(--secondary-light);
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.geju-power-bar {
+    height: 4px;
+    background: var(--bg);
+    border-radius: 2px;
+    margin: 6px 0;
+    overflow: hidden;
+}
+
+.geju-power-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--secondary), var(--secondary-light));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+}
+
+.geju-hidden-desc {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* 判定詳情 */
+.geju-detail-text {
+    font-size: 0.9rem;
+    line-height: 1.8;
+    color: var(--text);
+    padding: 10px 14px;
+    background: var(--bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--secondary);
+}
+
+/* 格局解析網格 */
+.geju-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.geju-info-item {
+    padding: 10px 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.geju-info-label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.geju-info-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.geju-good {
+    color: var(--wood);
+}
+
+.geju-bad {
+    color: var(--fire);
+}
+
+/* 格局描述 */
+.geju-desc-box {
+    padding: 14px;
+    background: var(--bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--secondary);
+}
+
+.geju-desc-text {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.geju-analysis-text {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    background: rgba(184,134,11,0.06);
+    border-radius: 4px;
+}
+
+.geju-quote {
+    font-size: 0.85rem;
+    color: var(--secondary-light);
+    font-style: italic;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    background: rgba(184,134,11,0.05);
+    border-radius: 4px;
+}
+
+.geju-advice-text {
+    font-size: 0.9rem;
+    color: var(--secondary-light);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+/* 格局助力 */
+.geju-bonus-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    background: var(--bg);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.geju-bonus-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* 特殊格局 */
+.geju-special-item {
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    background: var(--bg);
+    border-radius: 6px;
+    border-left: 3px solid var(--fire);
+}
+
+.geju-special-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--fire);
+    margin-bottom: 4px;
+}
+
+.geju-special-desc {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--text);
+}
+
+/* 速查表 */
+.geju-ref-body {
+    margin-top: 10px;
+}
+
+.geju-ref-cat {
+    margin: 10px 0 6px;
+}
+
+.geju-ref-cat-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--secondary-light);
+    padding: 2px 10px;
+    background: var(--bg);
+    border-radius: 10px;
+}
+
+.geju-ref-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.geju-ref-card {
+    padding: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.geju-ref-card:hover {
+    border-color: var(--secondary);
+}
+
+.geju-ref-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--secondary-light);
+    margin-bottom: 4px;
+}
+
+.geju-ref-treat {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.geju-ref-desc {
+    font-size: 0.75rem;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.geju-ref-fav {
+    font-size: 0.7rem;
+    color: var(--wood);
+}
+.geju-ref-unfav {
+    font-size: 0.7rem;
+    color: var(--fire);
+}
+
+/* ============================================================
+   格 局 資 料 庫（格典）樣式
+   ============================================================ */
+
+/* 頁面標題 */
+.geju-ref-header {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, var(--bg-card) 0%, #3d2a1a 100%);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+}
+.geju-ref-icon {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+.geju-ref-header h2 {
+    font-size: 2rem;
+    color: var(--secondary-light);
+    margin: 0 0 8px 0;
+    letter-spacing: 4px;
+}
+.geju-ref-header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* 段落 */
+.geju-ref-section {
+    margin-bottom: 30px;
+}
+.geju-ref-section-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--secondary-light);
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 16px;
+    letter-spacing: 2px;
+}
+.geju-ref-intro {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+.geju-ref-note {
+    background: rgba(255, 193, 7, 0.1);
+    border-left: 3px solid #ffc107;
+    padding: 12px 16px;
+    margin-top: 16px;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* 判定總則卡片格網 */
+.geju-principles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+.geju-principle-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    transition: all 0.2s;
+}
+.geju-principle-card:hover {
+    border-color: var(--secondary);
+    transform: translateY(-2px);
+}
+.geju-principle-key {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 2px 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+.geju-principle-title {
+    font-size: 1.05rem;
+    color: var(--text);
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+.geju-principle-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+.geju-principle-detail {
+    font-size: 0.8rem;
+    color: var(--secondary-light);
+    font-style: italic;
+    padding: 8px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    line-height: 1.4;
+}
+
+/* 三步法流程 */
+.geju-steps-flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    position: relative;
+}
+.geju-step-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.2s;
+}
+.geju-step-card:hover {
+    border-color: var(--secondary-light);
+}
+.geju-step-num {
+    display: inline-block;
+    background: var(--secondary);
+    color: #1a1410;
+    font-weight: bold;
+    font-size: 0.75rem;
+    padding: 2px 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+.geju-step-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+.geju-step-title-ref {
+    font-size: 1rem;
+    color: var(--text);
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+.geju-step-desc-ref {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 8px;
+    text-align: left;
+}
+.geju-step-detail-ref {
+    font-size: 0.8rem;
+    color: var(--secondary-light);
+    line-height: 1.4;
+    text-align: left;
+    background: rgba(0,0,0,0.2);
+    padding: 8px;
+    border-radius: 6px;
+}
+
+/* 分類區塊 */
+.geju-cat-block {
+    margin-bottom: 24px;
+}
+.geju-cat-header {
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 2px;
+}
+.geju-cat-name {
+    font-size: 1.1rem;
+    color: var(--secondary-light);
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+.geju-cat-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* 格局卡片格網 */
+.geju-pattern-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+}
+
+/* 單個格局卡片（可折疊） */
+.geju-pattern-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.geju-pattern-card:first-child {
+    border-radius: 0;
+}
+.geju-pattern-card:last-child {
+    border-radius: 0 0 10px 10px;
+}
+.geju-pattern-card:hover {
+    border-color: var(--border-light);
+}
+.geju-pattern-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    flex-wrap: wrap;
+}
+.geju-pattern-name {
+    font-size: 1rem;
+    color: var(--text);
+    font-weight: bold;
+    min-width: 80px;
+}
+.geju-pattern-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+.geju-badge-good {
+    background: rgba(46, 125, 50, 0.2);
+    color: var(--wood);
+    border: 1px solid var(--wood);
+}
+.geju-badge-bad {
+    background: rgba(196, 30, 58, 0.2);
+    color: var(--fire);
+    border: 1px solid var(--fire);
+}
+.geju-pattern-treat {
+    font-size: 0.8rem;
+    color: var(--secondary-light);
+    white-space: nowrap;
+}
+.geju-pattern-expand-icon {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+}
+.geju-pattern-expanded .geju-pattern-expand-icon {
+    transform: rotate(180deg);
+}
+
+/* 卡片展開內容 */
+.geju-pattern-body {
+    display: none;
+    padding: 0 16px 16px 16px;
+    border-top: 1px solid var(--border);
+}
+.geju-pattern-expanded .geju-pattern-body {
+    display: block;
+}
+.geju-pattern-section {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+.geju-label {
+    color: var(--text);
+    font-weight: bold;
+}
+.geju-pattern-analysis {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+.geju-pattern-quote {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: rgba(218, 165, 32, 0.1);
+    border-left: 3px solid var(--secondary);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.8rem;
+    color: var(--secondary-light);
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* 特殊格局卡片 */
+.geju-special-card .geju-pattern-name {
+    color: var(--secondary-light);
+}
+
+/* 速查表 */
+.geju-table-wrap {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+.geju-ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    background: var(--bg-card);
+}
+.geju-ref-table th {
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: bold;
+    white-space: nowrap;
+}
+.geju-ref-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+}
+.geju-ref-table tr:hover td {
+    background: var(--bg-card-hover);
+}
+.geju-ref-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* 響應式 */
+@media (max-width: 600px) {
+    .geju-main-title {
+        font-size: 2rem;
+        letter-spacing: 4px;
+    }
+    
+    .geju-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .geju-ref-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .geju-hidden-grid {
+        flex-direction: column;
+    }
+    
+    .geju-hidden-item {
+        min-width: auto;
+    }
+
+    /* 格典響應式 */
+    .geju-principles-grid {
+        grid-template-columns: 1fr;
+    }
+    .geju-steps-flow {
+        grid-template-columns: 1fr;
+    }
+    .geju-ref-header h2 {
+        font-size: 1.5rem;
+    }
+    .geju-pattern-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    .geju-pattern-expand-icon {
+        margin-left: 0;
+    }
+    .geju-ref-table {
+        font-size: 0.75rem;
+    }
+    .geju-ref-table th,
+    .geju-ref-table td {
+        padding: 6px 8px;
+    }
+}
