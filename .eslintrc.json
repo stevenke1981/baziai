@@ -1,0 +1,41 @@
+{
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "extends": ["eslint:recommended"],
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "globals": {
+    "window": "readonly",
+    "document": "readonly",
+    "console": "readonly",
+    "setTimeout": "readonly",
+    "alert": "readonly",
+    "Math": "readonly",
+    "Date": "readonly",
+    "Array": "readonly",
+    "String": "readonly",
+    "Number": "readonly",
+    "JSON": "readonly",
+    "parseInt": "readonly",
+    "parseFloat": "readonly",
+    "isNaN": "readonly",
+    "RegExp": "readonly",
+    "navigator": "readonly",
+    "fetch": "readonly",
+    "Promise": "readonly"
+  },
+  "rules": {
+    "no-var": "error",
+    "prefer-const": "warn",
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": "off",
+    "eqeqeq": ["warn", "always"],
+    "curly": ["warn", "multi-line"],
+    "no-throw-literal": "warn",
+    "no-undef": "off"
+  }
+}
