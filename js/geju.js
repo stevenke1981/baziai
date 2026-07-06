@@ -255,250 +255,182 @@ export const TEN_GOD_TO_PATTERN = {
  * @param {Object} baziResult - calculateBazi() 的結果
  * @returns {Object} 格局分析結果
  */
-export function determineGeju(baziResult) {
+/**
+ * 擷取格局判定所需的基本輸入參數
+ * @param {Object} baziResult
+ * @returns {Object|null} null 表示參數不足
+ */
+function extractGejuInputs(baziResult) {
     if (!baziResult || !baziResult.pillars || baziResult.pillars.length < 2) {
-        return { error: '八字資料不足，無法判定格局' };
+        return null;
     }
-
-    // === 1. 取得關鍵要素 ===
     const dayMaster = baziResult.dayMaster;
     if (!dayMaster || dayMaster.stemIndex === undefined) {
-        return { error: '日主資料不完整，無法判定格局' };
+        return null;
     }
-    const dayStemIndex = dayMaster.stemIndex;
-    const dayStem = dayMaster.stem;
-    const dayElement = dayMaster.element;
-
-    // 月柱（索引1）
     const monthPillar = baziResult.pillars[1];
     if (!monthPillar) {
-        return { error: '月柱資料不完整，無法判定格局' };
+        return null;
     }
-    const monthBranch = monthPillar.branch;
-    const monthBranchIndex = monthPillar.branchIndex;
-    const monthStem = monthPillar.stem;
-
-    // 月令地支分類
-    const branchCat = (monthBranch && BRANCH_CATEGORY[monthBranch]) || '';
-
-    // 月令藏干詳解
-    const hiddenDetails = (monthBranch && HIDDEN_STEMS_DETAILED[monthBranch]) || [];
-
-    // === 2. 收集天干（不含日主本身） ===
-    // 年干、月干、時干（日干除外）
     const otherStems = [];
     baziResult.pillars.forEach(p => {
         if (p.name !== '日柱') {
-            otherStems.push({
-                stem: p.stem,
-                stemIndex: p.stemIndex,
-                position: p.name
-            });
+            otherStems.push({ stem: p.stem, stemIndex: p.stemIndex, position: p.name });
         }
     });
+    const dayStemInfo = baziResult.pillars[2];
+    const hiddenDetails = (monthPillar.branch && HIDDEN_STEMS_DETAILED[monthPillar.branch]) || [];
+    const allQi = hiddenDetails.map(h => ({ ...h, tenGod: getTenGod(dayMaster.stemIndex, getStemIndex(h.stem)) }));
+    return {
+        dayMaster,
+        dayStemIndex: dayMaster.stemIndex,
+        dayStem: dayMaster.stem,
+        dayElement: dayMaster.element,
+        monthPillar,
+        monthBranch: monthPillar.branch,
+        monthBranchIndex: monthPillar.branchIndex,
+        monthStem: monthPillar.stem,
+        branchCat: (monthPillar.branch && BRANCH_CATEGORY[monthPillar.branch]) || '',
+        hiddenDetails,
+        allQi,
+        otherStems,
+        dayBranch: dayStemInfo ? dayStemInfo.branch : '',
+        mainQi: hiddenDetails.length > 0 ? hiddenDetails[0] : null,
+        midQi: hiddenDetails.length > 1 ? hiddenDetails[1] : null,
+        resQi: hiddenDetails.length > 2 ? hiddenDetails[2] : null
+    };
+}
 
-    // 同時也記錄日干本身（用於分析通根）
-    const dayStemInfo = baziResult.pillars[2]; // 日柱
-    const dayBranch = dayStemInfo ? dayStemInfo.branch : '';
+/**
+ * 判定透干情況（第一/二/三優先）
+ * @param {Object} inputs - extractGejuInputs 回傳
+ * @returns {Object} { tenGodUsed, stemUsed, finalGeju, method, stepDetail, transparentPositions, stepResults }
+ */
+function judgeTransparentGeju(inputs) {
+    const { dayStemIndex, monthBranch, branchCat, mainQi, midQi, resQi, allQi, otherStems, dayStem } = inputs;
 
-    // === 3. 分步檢查透干 ===
-
-    // 3a. 本氣是什麼
-    const mainQi = hiddenDetails.length > 0 ? hiddenDetails[0] : null;
-    
-    // 3b. 中氣（如果有的話）
-    const midQi = hiddenDetails.length > 1 ? hiddenDetails[1] : null;
-    
-    // 3c. 餘氣（如果有的話）
-    const resQi = hiddenDetails.length > 2 ? hiddenDetails[2] : null;
-
-    // 找出所有氣的分類
-    const allQi = hiddenDetails.map(h => ({
-        ...h,
-        tenGod: getTenGod(dayStemIndex, getStemIndex(h.stem))
-    }));
-
-    // === 判定步驟 ===
-
-    // 步驟 1：本氣是否有透出到年/月/時干？
     const mainTransparent = mainQi ? otherStems.filter(s => s.stemIndex === getStemIndex(mainQi.stem)) : [];
-
-    // 步驟 2：中氣是否有透出？
     const midTransparent = midQi ? otherStems.filter(s => s.stemIndex === getStemIndex(midQi.stem)) : [];
-
-    // 步驟 3：餘氣是否有透出？
     const resTransparent = resQi ? otherStems.filter(s => s.stemIndex === getStemIndex(resQi.stem)) : [];
 
-    // === 最終判定 ===
     let finalGeju = '';
     let method = '';
     let stepDetail = '';
     let tenGodUsed = '';
     let stemUsed = '';
     let transparentPositions = [];
-    let stepResults = [];
+    const stepResults = [];
 
-    // 第一步說明（資訊步驟，無 isMatch）
     stepResults.push({
-        step: 1,
-        title: '查明月令藏干',
+        step: 1, title: '查明月令藏干',
         desc: `月支為「${monthBranch}（${branchCat}）」，所藏天干如下：`,
-        details: allQi.map(q => ({
-            stem: q.stem,
-            type: q.type,
-            desc: q.desc,
-            power: q.power,
-            tenGod: q.tenGod
-        })),
+        details: allQi.map(q => ({ stem: q.stem, type: q.type, desc: q.desc, power: q.power, tenGod: q.tenGod })),
         isInfo: true
     });
 
     if (mainTransparent.length > 0) {
-        // 第一優先：本氣透干
         transparentPositions = mainTransparent.map(t => t.position);
         tenGodUsed = getTenGod(dayStemIndex, getStemIndex(mainQi.stem));
         stemUsed = mainQi.stem;
         finalGeju = tenGodUsed + '格';
         method = '第一優先：月令「本氣」透干';
         stepDetail = `月令「${monthBranch}」之本氣「${mainQi.stem}（${mainQi.desc}）」透出於「${transparentPositions.join('、')}」> 以透出之十神「${tenGodUsed}」定為「${finalGeju}」`;
-
-        stepResults.push({
-            step: 2,
-            title: '✓ 本氣透干（第一優先）',
-            desc: `月支${monthBranch}的本氣「${mainQi.stem}」出現在${transparentPositions.join('、')}上。`,
-            result: `本氣「${mainQi.stem}」→ ${tenGodUsed} → ${finalGeju}`,
-            isMatch: true
-        });
+        stepResults.push({ step: 2, title: '✓ 本氣透干（第一優先）', desc: `月支${monthBranch}的本氣「${mainQi.stem}」出現在${transparentPositions.join('、')}上。`, result: `本氣「${mainQi.stem}」→ ${tenGodUsed} → ${finalGeju}`, isMatch: true });
     } else if (midTransparent.length > 0) {
-        // 第二優先：中氣透干
         transparentPositions = midTransparent.map(t => t.position);
         tenGodUsed = getTenGod(dayStemIndex, getStemIndex(midQi.stem));
         stemUsed = midQi.stem;
         finalGeju = tenGodUsed + '格';
         method = '第二優先：月令「中氣」透干';
         stepDetail = `月令「${monthBranch}」之本氣未透，中氣「${midQi.stem}（${midQi.desc}）」透出於「${transparentPositions.join('、')}」> 以透出之十神「${tenGodUsed}」定為「${finalGeju}」`;
-
-        stepResults.push({
-            step: 2,
-            title: '✗ 本氣未透干',
-            desc: `月支${monthBranch}的本氣「${mainQi.stem}」未出現在年/月/時干上。`,
-            isMatch: false
-        });
-        stepResults.push({
-            step: 3,
-            title: '✓ 中氣透干（第二優先）',
-            desc: `月支${monthBranch}的中氣「${midQi.stem}」出現在${transparentPositions.join('、')}上。`,
-            result: `中氣「${midQi.stem}」→ ${tenGodUsed} → ${finalGeju}`,
-            isMatch: true
-        });
+        stepResults.push({ step: 2, title: '✗ 本氣未透干', desc: `月支${monthBranch}的本氣「${mainQi.stem}」未出現在年/月/時干上。`, isMatch: false });
+        stepResults.push({ step: 3, title: '✓ 中氣透干（第二優先）', desc: `月支${monthBranch}的中氣「${midQi.stem}」出現在${transparentPositions.join('、')}上。`, result: `中氣「${midQi.stem}」→ ${tenGodUsed} → ${finalGeju}`, isMatch: true });
     } else if (resTransparent.length > 0) {
-        // 第二優先：餘氣透干
         transparentPositions = resTransparent.map(t => t.position);
         tenGodUsed = getTenGod(dayStemIndex, getStemIndex(resQi.stem));
         stemUsed = resQi.stem;
         finalGeju = tenGodUsed + '格';
         method = '第二優先：月令「餘氣」透干';
         stepDetail = `月令「${monthBranch}」之本氣與中氣未透，餘氣「${resQi.stem}（${resQi.desc}）」透出於「${transparentPositions.join('、')}」> 以透出之十神「${tenGodUsed}」定為「${finalGeju}」`;
-
-        stepResults.push({
-            step: 2,
-            title: '✗ 本氣未透干',
-            desc: `月支${monthBranch}的本氣「${mainQi.stem}」未出現在年/月/時干上。`,
-            isMatch: false
-        });
-        stepResults.push({
-            step: 3,
-            title: '✗ 中氣未透干',
-            desc: `月支${monthBranch}的中氣「${midQi.stem}」也未出現在天干上。`,
-            isMatch: false
-        });
-        stepResults.push({
-            step: 4,
-            title: '✓ 餘氣透干（第二優先）',
-            desc: `月支${monthBranch}的餘氣「${resQi.stem}」出現在${transparentPositions.join('、')}上。`,
-            result: `餘氣「${resQi.stem}」→ ${tenGodUsed} → ${finalGeju}`,
-            isMatch: true
-        });
+        stepResults.push({ step: 2, title: '✗ 本氣未透干', desc: `月支${monthBranch}的本氣「${mainQi.stem}」未出現在年/月/時干上。`, isMatch: false });
+        stepResults.push({ step: 3, title: '✗ 中氣未透干', desc: `月支${monthBranch}的中氣「${midQi.stem}」也未出現在天干上。`, isMatch: false });
+        stepResults.push({ step: 4, title: '✓ 餘氣透干（第二優先）', desc: `月支${monthBranch}的餘氣「${resQi.stem}」出現在${transparentPositions.join('、')}上。`, result: `餘氣「${resQi.stem}」→ ${tenGodUsed} → ${finalGeju}`, isMatch: true });
     } else {
-        // 第三優先：皆無透干，直接取本氣
         tenGodUsed = getTenGod(dayStemIndex, getStemIndex(mainQi.stem));
         stemUsed = mainQi.stem;
         finalGeju = tenGodUsed + '格';
         method = '第三優先：皆無透干，直接取「本氣」';
         stepDetail = `月令「${monthBranch}」所藏之天干（${allQi.map(q => q.stem).join('、')}）完全沒有透出到天干。> 直接以月支「${monthBranch}」的本氣「${mainQi.stem}」對日主${dayStem}的十神「${tenGodUsed}」定為「${finalGeju}」`;
-
-        stepResults.push({
-            step: 2,
-            title: '✗ 本氣未透干',
-            desc: `月支${monthBranch}的本氣「${mainQi.stem}」未出現在年/月/時干上。`,
-            isMatch: false
-        });
-        if (midQi) {
-            stepResults.push({
-                step: 3,
-                title: '✗ 中氣未透干',
-                desc: `月支${monthBranch}的中氣「${midQi.stem}」也未出現在天干上。`,
-                isMatch: false
-            });
-        }
-        if (resQi) {
-            stepResults.push({
-                step: 4,
-                title: '✗ 餘氣未透干',
-                desc: `月支${monthBranch}的餘氣「${resQi.stem}」同樣未出現在天干上。`,
-                isMatch: false
-            });
-        }
-        stepResults.push({
-            step: stepResults.length + 1,
-            title: '✓ 皆無透干，取本氣（第三優先）',
-            desc: `月支${monthBranch}所有藏干皆未透出，直接以本氣「${mainQi.stem}」對日主${dayStem}定格局。`,
-            result: `本氣「${mainQi.stem}」→ ${tenGodUsed} → ${finalGeju}`,
-            isMatch: true
-        });
+        stepResults.push({ step: 2, title: '✗ 本氣未透干', desc: `月支${monthBranch}的本氣「${mainQi.stem}」未出現在年/月/時干上。`, isMatch: false });
+        if (midQi) { stepResults.push({ step: 3, title: '✗ 中氣未透干', desc: `月支${monthBranch}的中氣「${midQi.stem}」也未出現在天干上。`, isMatch: false }); }
+        if (resQi) { stepResults.push({ step: 4, title: '✗ 餘氣未透干', desc: `月支${monthBranch}的餘氣「${resQi.stem}」同樣未出現在天干上。`, isMatch: false }); }
+        stepResults.push({ step: stepResults.length + 1, title: '✓ 皆無透干，取本氣（第三優先）', desc: `月支${monthBranch}所有藏干皆未透出，直接以本氣「${mainQi.stem}」對日主${dayStem}定格局。`, result: `本氣「${mainQi.stem}」→ ${tenGodUsed} → ${finalGeju}`, isMatch: true });
     }
 
-    // === 4. 格局分類 ===
-    // 如果十神是比肩→建祿格、劫財→月刃格
-    if (tenGodUsed === '比肩') {
-        finalGeju = '建祿格';
-    } else if (tenGodUsed === '劫財') {
-        finalGeju = '月刃格';
-    }
-    
-    const isNormalPattern = NORMAL_PATTERNS.hasOwnProperty(finalGeju);
-    let gejuInfo = null;
-    let category = '';
-    let patternType = '';
+    return { tenGodUsed, stemUsed, finalGeju, method, stepDetail, transparentPositions, stepResults };
+}
 
-    if (isNormalPattern) {
-        gejuInfo = NORMAL_PATTERNS[finalGeju];
-        category = '普通格局（正格）';
-        patternType = '正格';
-    } else if (SPECIAL_PATTERNS.hasOwnProperty(finalGeju)) {
-        gejuInfo = SPECIAL_PATTERNS[finalGeju];
-        category = '特殊格局';
-        patternType = '特殊格';
-    } else if (finalGeju.includes('從') || finalGeju.includes('專旺') || finalGeju.includes('化氣')) {
-        category = '特別格局（變格）';
-        patternType = '變格';
+/**
+ * 格局分類（建祿格、月刃格、正格、特殊格等）
+ * @param {string} tenGodUsed
+ * @param {string} finalGeju
+ * @returns {Object} { finalGeju, isNormalPattern, category, patternType, gejuInfo }
+ */
+function classifyPattern(tenGodUsed, finalGeju) {
+    let updatedGeju = finalGeju;
+    if (tenGodUsed === '比肩') { updatedGeju = '建祿格'; }
+    else if (tenGodUsed === '劫財') { updatedGeju = '月刃格'; }
+
+    const isNormal = NORMAL_PATTERNS.hasOwnProperty(updatedGeju);
+    let info, cat, ptype;
+
+    if (isNormal) {
+        info = NORMAL_PATTERNS[updatedGeju];
+        cat = '普通格局（正格）';
+        ptype = '正格';
+    } else if (SPECIAL_PATTERNS.hasOwnProperty(updatedGeju)) {
+        info = SPECIAL_PATTERNS[updatedGeju];
+        cat = '特殊格局';
+        ptype = '特殊格';
+    } else if (updatedGeju.includes('從') || updatedGeju.includes('專旺') || updatedGeju.includes('化氣')) {
+        cat = '特別格局（變格）';
+        ptype = '變格';
     } else {
-        category = '普通格局（正格）';
-        patternType = '正格';
+        cat = '普通格局（正格）';
+        ptype = '正格';
+    }
+    return { finalGeju: updatedGeju, isNormalPattern: isNormal, category: cat, patternType: ptype, gejuInfo: info };
+}
+
+/**
+ * 完整格局判定
+ * @param {Object} baziResult - calculateBazi() 的結果
+ * @returns {Object} 格局分析結果
+ */
+export function determineGeju(baziResult) {
+    const inputs = extractGejuInputs(baziResult);
+    if (!inputs) {
+        return { error: '八字資料不足，無法判定格局' };
     }
 
-    // === 5. 特殊的檢驗：是否可能為特殊格局 ===
-    const specialCheck = checkSpecialPattern(baziResult);
+    const { dayStemIndex, dayStem, dayElement, monthBranch, monthStem, branchCat, allQi, otherStems, dayMaster } = inputs;
 
-    // === 6. 檢查其他柱是否也有透出同樣的格局十神（格局助力） ===
+    // 判定透干
+    const judgment = judgeTransparentGeju(inputs);
+    const { tenGodUsed, stemUsed, transparentPositions, stepResults, method, stepDetail } = judgment;
+    let { finalGeju } = judgment;
+
+    // 格局分類
+    const patternInfo = classifyPattern(tenGodUsed, finalGeju);
+    finalGeju = patternInfo.finalGeju;
+    const { isNormalPattern, category, gejuInfo } = patternInfo;
+
+    // 特殊檢驗
+    const specialCheck = checkSpecialPattern(baziResult);
     const sameTenGodPositions = otherStems
         .filter(s => getTenGod(dayStemIndex, s.stemIndex) === tenGodUsed)
         .map(s => s.position);
-
-    // === 7. 檢查地支是否有會合局來強化月令 ===
     const branchPowerCheck = analyzeBranchPower(baziResult, monthBranch);
-
-    // === 8. 綜合分析 ===
     const comprehensiveAnalysis = generateComprehensiveAnalysis(
         finalGeju, dayMaster, monthBranch, monthStem,
         tenGodUsed, stemUsed, transparentPositions, gejuInfo,
@@ -506,39 +438,12 @@ export function determineGeju(baziResult) {
     );
 
     return {
-        // 基本資訊
-        dayMaster: dayStem,
-        dayElement: dayElement,
-        monthBranch: monthBranch,
-        monthBranchCategory: branchCat,
-        monthStem: monthStem,
-        
-        // 月令藏干
+        dayMaster: dayStem, dayElement, monthBranch, monthBranchCategory: branchCat, monthStem,
         hiddenDetails: allQi,
-        
-        // 判定過程
-        stepResults: stepResults,
-        method: method,
-        stepDetail: stepDetail,
-        
-        // 格局結果
-        finalGeju: finalGeju,
-        tenGodUsed: tenGodUsed,
-        stemUsed: stemUsed,
-        transparentPositions: transparentPositions,
-        
-        // 分類
-        category: category,
-        isNormalPattern: isNormalPattern,
-        gejuInfo: gejuInfo,
-        
-        // 補充分析
-        sameTenGodPositions: sameTenGodPositions,
-        branchPowerCheck: branchPowerCheck,
-        specialCheck: specialCheck,
-        
-        // 綜合
-        comprehensiveAnalysis: comprehensiveAnalysis
+        stepResults, method, stepDetail,
+        finalGeju, tenGodUsed, stemUsed, transparentPositions,
+        category, isNormalPattern, gejuInfo,
+        sameTenGodPositions, branchPowerCheck, specialCheck, comprehensiveAnalysis
     };
 }
 

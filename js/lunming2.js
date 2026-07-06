@@ -317,172 +317,135 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
     // 核心評分引擎
     // ============================================================
 
-    function calculateDayMasterStrength(baziResult) {
-        if (!baziResult || !baziResult.pillars || baziResult.pillars.length < 3) return null;
-
-        let dm = baziResult.dayMaster;
-        let dmElement = dm.element;
-        let pillars = baziResult.pillars;
-        let hasHour = pillars.length === 4;
-        let pillarLabels = ['年', '月', '日'];
-        if (hasHour) pillarLabels.push('時');
-
-        let scores = {
-            monthScore: 0,    // 月令得分 (max 40)
-            rootScore: 0,     // 通根得分 (max 30)
-            peerScore: 0,     // 黨眾得分 (max 20)
-            supportScore: 0,  // 生扶得分 (max 10)
-            totalScore: 0,
-            judgment: '',
-            details: {}
+    function calculateMonthScore(dmElement, pillars) {
+        const monthBranch = pillars[1].branch;
+        const season = getSeason(monthBranch);
+        return {
+            monthScore: MONTH_STRENGTH[dmElement][season],
+            monthBranch: monthBranch,
+            monthSeason: season
         };
+    }
 
-        // ========================================
-        // 1. 月令評分 (40分)
-        // ========================================
-        let monthBranch = pillars[1].branch;
-        let season = getSeason(monthBranch);
-        scores.monthScore = MONTH_STRENGTH[dmElement][season];
-        scores.details.monthBranch = monthBranch;
-        scores.details.monthSeason = season;
-
-        // ========================================
-        // 2. 地支通根評分 (30分)
-        // ========================================
+    function calculateRootScore(dmElement, pillars, pillarLabels) {
         let rootScore = 0;
-        let rootDetails = [];
-
+        const rootDetails = [];
         pillars.forEach(function(pillar, idx) {
-            let branch = pillar.branch;
-            let hidden = HIDDEN_STEMS[branch] || [];
-
+            const branch = pillar.branch;
+            const hidden = HIDDEN_STEMS[branch] || [];
             hidden.forEach(function(h) {
                 if (STEM_ELEMENT[h.stem] === dmElement) {
                     let points = 0;
                     if (h.type === 'main') points = 10;
                     else if (h.type === 'mid') points = 5;
                     else if (h.type === 'residual') points = 2;
-
-                    // 日支坐根 ×1.5 加成
-                    if (idx === 2) points = Math.round(points * 1.5);
-
+                    if (idx === 2) points = Math.round(points * 1.5); // 日支加成
                     rootScore += points;
-                    rootDetails.push({
-                        pillar: pillarLabels[idx],
-                        branch: branch,
-                        stem: h.stem,
-                        type: h.type,
-                        points: points
-                    });
+                    rootDetails.push({ pillar: pillarLabels[idx], branch, stem: h.stem, type: h.type, points });
                 }
             });
         });
+        return { rootScore: Math.min(rootScore, 30), rootDetails };
+    }
 
-        scores.rootScore = Math.min(rootScore, 30);
-        scores.details.rootDetails = rootDetails;
-
-        // ========================================
-        // 3. 天干黨眾評分 (20分)
-        // ========================================
+    function calculatePeerScore(dmElement, pillars, pillarLabels) {
         let peerScore = 0;
-        let peerDetails = [];
-
+        const peerDetails = [];
         pillars.forEach(function(pillar, idx) {
-            // 不計日主自身
-            if (idx === 2) return;
-
-            let stem = pillar.stem;
-            let sEl = STEM_ELEMENT[stem];
+            if (idx === 2) return; // 不計日主自身
+            const sEl = STEM_ELEMENT[pillar.stem];
             if (!sEl) return;
-
-            let rel = getRelation(dmElement, sEl);
+            const rel = getRelation(dmElement, sEl);
             if (rel === 'same') {
-                // 比肩/劫財
                 peerScore += 7;
-                peerDetails.push({ pillar: pillarLabels[idx], stem: stem, type: '比劫', element: sEl });
+                peerDetails.push({ pillar: pillarLabels[idx], stem: pillar.stem, type: '比劫', element: sEl });
             } else if (rel === 'birth') {
-                // 正印/偏印 — 生我者
                 peerScore += 5;
-                peerDetails.push({ pillar: pillarLabels[idx], stem: stem, type: '印星', element: sEl });
+                peerDetails.push({ pillar: pillarLabels[idx], stem: pillar.stem, type: '印星', element: sEl });
             }
         });
+        return { peerScore: Math.min(peerScore, 20), peerDetails };
+    }
 
-        scores.peerScore = Math.min(peerScore, 20);
-        scores.details.peerDetails = peerDetails;
-
-        // ========================================
-        // 4. 生扶助益評分 (10分)
-        // ========================================
+    function calculateSupportScore(dmElement, pillars, hasHour) {
         let supportScore = 0;
-        let supportDetails = [];
-
-        // 月干助益 (+5)
-        let monthStemEl = STEM_ELEMENT[pillars[1].stem];
+        const supportDetails = [];
+        const monthStemEl = STEM_ELEMENT[pillars[1].stem];
         if (monthStemEl) {
-            let mRel = getRelation(dmElement, monthStemEl);
+            const mRel = getRelation(dmElement, monthStemEl);
             if (mRel === 'same' || mRel === 'birth') {
                 supportScore += 5;
                 supportDetails.push({ position: '月干', stem: pillars[1].stem, element: monthStemEl, points: 5 });
             }
         }
-
-        // 時干助益 (+3)，僅在有時柱時計算
         if (hasHour) {
-            let hourStemEl = STEM_ELEMENT[pillars[3].stem];
+            const hourStemEl = STEM_ELEMENT[pillars[3].stem];
             if (hourStemEl) {
-                let hRel = getRelation(dmElement, hourStemEl);
+                const hRel = getRelation(dmElement, hourStemEl);
                 if (hRel === 'same' || hRel === 'birth') {
                     supportScore += 3;
                     supportDetails.push({ position: '時干', stem: pillars[3].stem, element: hourStemEl, points: 3 });
                 }
             }
         }
-
-        // 日支助益 (+2)
-        let dayBranchEl = BRANCH_ELEMENT[pillars[2].branch];
+        const dayBranchEl = BRANCH_ELEMENT[pillars[2].branch];
         if (dayBranchEl) {
-            let dBRel = getRelation(dmElement, dayBranchEl);
+            const dBRel = getRelation(dmElement, dayBranchEl);
             if (dBRel === 'same' || dBRel === 'birth') {
                 supportScore += 2;
                 supportDetails.push({ position: '日支', stem: pillars[2].branch, element: dayBranchEl, points: 2 });
             }
         }
+        return { supportScore: Math.min(supportScore, 10), supportDetails };
+    }
 
-        scores.supportScore = Math.min(supportScore, 10);
-        scores.details.supportDetails = supportDetails;
+    function determineBodyStrength(totalScore) {
+        if (totalScore >= 70) return '身強';
+        if (totalScore >= 50) return '偏強';
+        if (totalScore >= 30) return '偏弱';
+        return '身弱';
+    }
 
-        // ========================================
-        // 總分計算
-        // ========================================
-        scores.totalScore = scores.monthScore + scores.rootScore + scores.peerScore + scores.supportScore;
+    function calculateDayMasterStrength(baziResult) {
+        if (!baziResult || !baziResult.pillars || baziResult.pillars.length < 3) return null;
 
-        // ========================================
-        // 格局判定
-        // ========================================
-        if (scores.totalScore >= 70) {
-            scores.judgment = '身強';
-        } else if (scores.totalScore >= 50) {
-            scores.judgment = '偏強';
-        } else if (scores.totalScore >= 30) {
-            scores.judgment = '偏弱';
-        } else {
-            scores.judgment = '身弱';
-        }
+        const dm = baziResult.dayMaster;
+        const dmElement = dm.element;
+        const pillars = baziResult.pillars;
+        const hasHour = pillars.length === 4;
+        const pillarLabels = ['年', '月', '日'];
+        if (hasHour) pillarLabels.push('時');
 
-        // ========================================
-        // 喜忌推論
-        // ========================================
-        let favResult = getFavorableUnfavorable(dmElement, scores.judgment);
-        scores.favoriteElements = favResult.favorite;
-        scores.unfavoriteElements = favResult.unfavorite;
-        scores.favAnalysis = favResult.analysis;
-        scores.favAdvice = favResult.advice;
+        const monthInfo = calculateMonthScore(dmElement, pillars);
+        const rootInfo = calculateRootScore(dmElement, pillars, pillarLabels);
+        const peerInfo = calculatePeerScore(dmElement, pillars, pillarLabels);
+        const supportInfo = calculateSupportScore(dmElement, pillars, hasHour);
 
-        // ========================================
-        // 特殊格局檢測（須在 scores 完整後執行）
-        // ========================================
+        const totalScore = monthInfo.monthScore + rootInfo.rootScore + peerInfo.peerScore + supportInfo.supportScore;
+        const judgment = determineBodyStrength(totalScore);
+        const favResult = getFavorableUnfavorable(dmElement, judgment);
+
+        const scores = {
+            monthScore: monthInfo.monthScore,
+            rootScore: rootInfo.rootScore,
+            peerScore: peerInfo.peerScore,
+            supportScore: supportInfo.supportScore,
+            totalScore,
+            judgment,
+            details: {
+                monthBranch: monthInfo.monthBranch,
+                monthSeason: monthInfo.monthSeason,
+                rootDetails: rootInfo.rootDetails,
+                peerDetails: peerInfo.peerDetails,
+                supportDetails: supportInfo.supportDetails
+            },
+            favoriteElements: favResult.favorite,
+            unfavoriteElements: favResult.unfavorite,
+            favAnalysis: favResult.analysis,
+            favAdvice: favResult.advice
+        };
+
         scores.specialPatterns = detectSpecialPatterns(baziResult, scores);
-
         return scores;
     }
 

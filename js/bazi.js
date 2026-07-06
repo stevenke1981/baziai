@@ -12,6 +12,8 @@
  * - 大運起運
  */
 
+import { getSexagenaryIndexFast } from './data.js';
+
 // ============================================================
 // 基礎資料庫
 // ============================================================
@@ -176,10 +178,17 @@ export function getSolarTerms(year) {
  * @param {number} baseDay 基準日（浮點數）
  * @returns {number} 該節氣在該月的日期（浮點數）
  */
+const _solarTermDateCache = new Map();
+
 export function getApproximateSolarTermDate(year, month, baseDay) {
     // 基於天文學計算的簡化版
     // 由於地球軌道離心率，各節氣日期略有偏移
     // 使用正弦修正來提高精確度
+    
+    const cacheKey = `${year}_${month}_${baseDay.toFixed(1)}`;
+    if (_solarTermDateCache.has(cacheKey)) {
+        return _solarTermDateCache.get(cacheKey);
+    }
     
     // 各節氣對應的角度 (0度 = 春分)
     const termAngles = {
@@ -197,7 +206,55 @@ export function getApproximateSolarTermDate(year, month, baseDay) {
     const angle = (month - 1) * 30 + (baseDay - 1) * 0.9856;
     const correction = -2 * Math.sin((angle - 80) * Math.PI / 180);
     
-    return baseDay + correction;
+    const result = baseDay + correction;
+    _solarTermDateCache.set(cacheKey, result);
+    return result;
+}
+
+const _solarTermDatesCache = new Map();
+
+export function getSolarTermDates(year) {
+    if (_solarTermDatesCache.has(year)) {
+        return _solarTermDatesCache.get(year);
+    }
+    
+    const baseTerms = [
+        { name: '立春', month: 2, yearOff: 0 },
+        { name: '驚蟄', month: 3, yearOff: 0 },
+        { name: '清明', month: 4, yearOff: 0 },
+        { name: '立夏', month: 5, yearOff: 0 },
+        { name: '芒種', month: 6, yearOff: 0 },
+        { name: '小暑', month: 7, yearOff: 0 },
+        { name: '立秋', month: 8, yearOff: 0 },
+        { name: '白露', month: 9, yearOff: 0 },
+        { name: '寒露', month: 10, yearOff: 0 },
+        { name: '立冬', month: 11, yearOff: 0 },
+        { name: '大雪', month: 12, yearOff: 0 },
+        { name: '小寒', month: 1, yearOff: 1 } // 下一年的1月
+    ];
+    
+    const result = {};
+    for (const t of baseTerms) {
+        const ty = year + t.yearOff;
+        let day;
+        if (t.name === '立春') {
+            day = getLichunDate(ty);
+        } else {
+            const baseDays = {
+                '驚蟄': 5.5, '清明': 4.5, '立夏': 5.5,
+                '芒種': 5.5, '小暑': 7.0, '立秋': 7.5,
+                '白露': 7.5, '寒露': 8.0, '立冬': 7.0,
+                '大雪': 7.0, '小寒': 5.5
+            };
+            day = getApproximateSolarTermDate(ty, t.month, baseDays[t.name] || 4.0);
+        }
+        const dayInt = Math.floor(day);
+        // 小時近似：取整日的正午(12:00) 以便比較
+        result[t.name] = new Date(ty, t.month - 1, dayInt, 12, 0, 0);
+    }
+    
+    _solarTermDatesCache.set(year, result);
+    return result;
 }
 
 /**
@@ -505,35 +562,8 @@ export function getHiddenStemsWithTenGod(dayStemIndex, branchIndex) {
  * @returns {string}
  */
 export function getNayin(stemIndex, branchIndex) {
-    // 60甲子納音索引
-    // 甲子(0)→海中金, 乙丑(1)→海中金, 丙寅(2)→爐中火, ...
-    // 每兩個一組，共30組
-    // 先計算60甲子索引
-    let idx = stemIndex % 10;
-    let bidx = branchIndex % 12;
-    
-    // 計算60甲子索引：天干和地支配對
-    // 甲子=0, 乙丑=1, 丙寅=2, ... 癸亥=59
-    // 公式：從甲子開始，天乾和地支索引相同時為甲子
-    // 天干0配地支0(甲子), 天干1配地支1(乙丑), ...
-    // 當天干配完一輪，地支還剩2個
-    // 實際上是 sexagenaryIndex = (stemIndex * 6 + branchIndex * 25) ??? 
-    // 不對，更簡單的方式：
-    
-    // 先用正規方法求六十甲子索引
-    // 因為天干10個，地支12個，最小公倍數60
-    // 甲子=0，其中甲=0，子=0
-    // 公式：要找到配對
-    // 天干和地支的對應關係：天干index = sexagenaryIndex % 10, 地支index = sexagenaryIndex % 12
-    
-    // 解同餘方程組
-    for (let i = 0; i < 60; i++) {
-        if (i % 10 === stemIndex && i % 12 === branchIndex) {
-            idx = i;
-            break;
-        }
-    }
-    
+    // 使用高效的六十甲子索引計算（數學公式取代迴圈）
+    const idx = getSexagenaryIndexFast(stemIndex, branchIndex);
     // 納音以兩個一組
     const nayinIndex = Math.floor(idx / 2);
     return NAYIN[nayinIndex] || '';
@@ -700,48 +730,6 @@ export function getFavoriteElement(dayStemIndex, elementStrength) {
 // ============================================================
 // 大運計算
 // ============================================================
-
-/**
- * 取得某年所有關鍵節氣的 Date 物件
- * 回傳 { 節氣名稱: Date }
- */
-export function getSolarTermDates(year) {
-    const baseTerms = [
-        { name: '立春', month: 2, yearOff: 0 },
-        { name: '驚蟄', month: 3, yearOff: 0 },
-        { name: '清明', month: 4, yearOff: 0 },
-        { name: '立夏', month: 5, yearOff: 0 },
-        { name: '芒種', month: 6, yearOff: 0 },
-        { name: '小暑', month: 7, yearOff: 0 },
-        { name: '立秋', month: 8, yearOff: 0 },
-        { name: '白露', month: 9, yearOff: 0 },
-        { name: '寒露', month: 10, yearOff: 0 },
-        { name: '立冬', month: 11, yearOff: 0 },
-        { name: '大雪', month: 12, yearOff: 0 },
-        { name: '小寒', month: 1, yearOff: 1 } // 下一年的1月
-    ];
-    
-    const result = {};
-    for (const t of baseTerms) {
-        const ty = year + t.yearOff;
-        let day;
-        if (t.name === '立春') {
-            day = getLichunDate(ty);
-        } else {
-            const baseDays = {
-                '驚蟄': 5.5, '清明': 4.5, '立夏': 5.5,
-                '芒種': 5.5, '小暑': 7.0, '立秋': 7.5,
-                '白露': 7.5, '寒露': 8.0, '立冬': 7.0,
-                '大雪': 7.0, '小寒': 5.5
-            };
-            day = getApproximateSolarTermDate(ty, t.month, baseDays[t.name] || 4.0);
-        }
-        const dayInt = Math.floor(day);
-        // 小時近似：取整日的正午(12:00) 以便比較
-        result[t.name] = new Date(ty, t.month - 1, dayInt, 12, 0, 0);
-    }
-    return result;
-}
 
 /**
  * 計算起運歲數與大運
