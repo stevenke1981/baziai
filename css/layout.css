@@ -68,7 +68,8 @@ body::before {
 
 .tab-content.active {
     display: block;
-    animation: fadeIn 0.3s ease;
+    will-change: opacity, transform;
+    transform: translateZ(0);
 }
 
 @keyframes fadeIn {
