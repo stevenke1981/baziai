@@ -21,6 +21,24 @@ async function bootApp() {
 }
 
 describe('app.js 模組載入與排盤渲染', () => {
+    it('模組載入後年份下拉有選項，且能顯示已選西元年', async () => {
+        await bootApp();
+
+        const yearSel = document.getElementById('birthYear');
+        expect(yearSel).toBeTruthy();
+        // 至少含 placeholder + 1900..now+10
+        expect(yearSel.options.length).toBeGreaterThan(100);
+        expect(yearSel.value).toBeTruthy(); // init 預填今天
+
+        yearSel.value = '1990';
+        expect(yearSel.value).toBe('1990');
+        const selected = yearSel.selectedOptions[0];
+        expect(selected).toBeTruthy();
+        expect(selected.textContent).toMatch(/1990/);
+        // 關閉狀態應能讀取顯示文字（非空白）
+        expect((selected.textContent || '').trim().length).toBeGreaterThan(0);
+    });
+
     it('載入整個模組圖不拋錯，且能完成排盤並渲染四柱', async () => {
         await bootApp();
 

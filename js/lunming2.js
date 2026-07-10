@@ -1105,6 +1105,21 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
         area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     };
 
+// ES Module 匯出（app.js 以 named import 載入；缺 export 會導致整頁模組失敗、年份下拉空白）
+export {
+    renderLunming2,
+    calculateDayMasterStrength,
+    detectSpecialPatterns,
+    querySpecialPattern,
+    SPECIAL_PATTERN_DB,
+    getAllPatternCategories,
+    getSeason,
+    getRelation,
+    getElementColorClass,
+    getScoreLevel,
+    getFavorableUnfavorable
+};
+
 // 向後相容：暴露全局
 if (typeof window !== 'undefined') {
     window.renderLunming2 = renderLunming2;

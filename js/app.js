@@ -82,9 +82,9 @@ import { renderGejuRef } from './geju-ref.js';
         bindEvents();
         initTabs();
 
-        // 預設填今天日期
+        // 預設填今天日期（value 一律字串，確保與 option.value 比對成功並正確顯示）
         const today = new Date();
-        el.birthYear.value = today.getFullYear();
+        el.birthYear.value = String(today.getFullYear());
         el.birthMonth.value = String(today.getMonth() + 1);
         updateDayOptions();
         el.birthDay.value = String(today.getDate());
@@ -150,7 +150,7 @@ import { renderGejuRef } from './geju-ref.js';
         el.birthDay.innerHTML = '<option value="">— 日 —</option>';
         for (let d = 1; d <= 31; d++) {
             const opt = document.createElement('option');
-            opt.value = d;
+            opt.value = String(d);
             opt.textContent = `${d} 日`;
             el.birthDay.appendChild(opt);
         }
@@ -272,7 +272,7 @@ import { renderGejuRef } from './geju-ref.js';
         // 年份/月份雙擊快速回到今天
         el.birthYear.addEventListener('dblclick', () => {
             const today = new Date();
-            el.birthYear.value = today.getFullYear();
+            el.birthYear.value = String(today.getFullYear());
             updateDayOptions();
         });
     }

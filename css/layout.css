@@ -175,6 +175,11 @@ body::before {
     transition: border-color 0.2s;
     outline: none;
     width: 100%;
+    /* 深色主題下確保原生 select 顯示已選文字與下拉選項 */
+    color-scheme: dark;
+    -webkit-appearance: menulist;
+    appearance: menulist;
+    cursor: pointer;
 }
 
 .form-group select:focus,
@@ -185,6 +190,14 @@ body::before {
 
 .form-group select option {
     background: var(--bg-card);
+    color: var(--text);
+}
+
+/* 已選項目可讀性（關閉狀態） */
+.form-group select:invalid {
+    color: var(--text-muted);
+}
+.form-group select:valid {
     color: var(--text);
 }
 
