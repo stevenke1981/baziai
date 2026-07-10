@@ -30,6 +30,7 @@
             <button class="tab-btn active" data-tab="paipan" role="tab" aria-selected="true">排 盤</button>
             <button class="tab-btn" data-tab="lunming" role="tab" aria-selected="false">論 命</button>
             <button class="tab-btn" data-tab="lunming2" role="tab" aria-selected="false">論命二</button>
+            <button class="tab-btn" data-tab="liunian" role="tab" aria-selected="false">流 年</button>
             <button class="tab-btn" data-tab="geju" role="tab" aria-selected="false">格 局</button>
             <button class="tab-btn" data-tab="gejuref" role="tab" aria-selected="false">格 典</button>
         </nav>
@@ -210,6 +211,18 @@
         <div id="tabLunming2" class="tab-content" role="tabpanel">
             <div id="lunming2Root">
                 <div class="loading">評分引擎載入中...</div>
+            </div>
+        </div>
+
+        <!-- ====== 流年頁籤（逐年影響分析） ====== -->
+        <div id="tabLiunian" class="tab-content" role="tabpanel">
+            <div id="liunianRoot">
+                <div class="card">
+                    <div class="card-title">流 年 分 析</div>
+                    <div style="text-align:center;padding:30px;color:var(--text-muted);">
+                        請先於「排盤」頁籤輸入出生資料並計算八字，再切換至此頁查看每一年流年對命主的影響。
+                    </div>
+                </div>
             </div>
         </div>
 

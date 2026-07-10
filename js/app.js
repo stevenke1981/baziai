@@ -21,6 +21,7 @@ import { renderLunming } from './lunming.js';
 import { renderLunming2 } from './lunming2.js';
 import { determineGeju, renderGeju } from './geju.js';
 import { renderGejuRef } from './geju-ref.js';
+import { renderLiunian } from './liunian.js';
 
 // ============================================================
 // DOM 引用與狀態
@@ -66,6 +67,7 @@ import { renderGejuRef } from './geju-ref.js';
         gejuRoot: document.getElementById('gejuRoot'),
         lunmingRoot: document.getElementById('lunmingRoot'),
         lunming2Root: document.getElementById('lunming2Root'),
+        liunianRoot: document.getElementById('liunianRoot'),
         gejuRefRoot: document.getElementById('gejuRefRoot'),
     };
 
@@ -297,6 +299,7 @@ import { renderGejuRef } from './geju-ref.js';
             'paipan': 'tabPaipan',
             'lunming': 'tabLunming',
             'lunming2': 'tabLunming2',
+            'liunian': 'tabLiunian',
             'geju': 'tabGeju',
             'gejuref': 'tabGejuRef'
         };
@@ -314,6 +317,10 @@ import { renderGejuRef } from './geju-ref.js';
 
         if (tabId === 'lunming2') {
             renderLunming2(last);
+        }
+
+        if (tabId === 'liunian') {
+            renderLiunian(last, el.liunianRoot);
         }
 
         if (tabId === 'geju') {

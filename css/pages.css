@@ -908,6 +908,236 @@
     animation: fadeIn 0.3s ease;
 }
 
+/* ============================================================
+   流年分析 (liunian)
+   ============================================================ */
+
+.ln-intro {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.ln-disclaimer,
+.ln-muted {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.ln-focus-card.ln-tone-good {
+    border-color: rgba(46, 125, 50, 0.45);
+}
+
+.ln-focus-card.ln-tone-caution,
+.ln-focus-card.ln-tone-bad {
+    border-color: rgba(211, 47, 47, 0.4);
+}
+
+.ln-table-wrap {
+    overflow-x: auto;
+    max-height: 420px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.ln-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    min-width: 640px;
+}
+
+.ln-table th,
+.ln-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.ln-table th {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    color: var(--secondary-light);
+    font-weight: 600;
+    z-index: 1;
+}
+
+.ln-table tbody tr {
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.ln-table tbody tr:hover {
+    background: var(--bg-card-hover);
+}
+
+.ln-table tbody tr.ln-row-current {
+    background: rgba(184, 134, 11, 0.08);
+}
+
+.ln-table tbody tr.ln-row-active {
+    background: rgba(184, 134, 11, 0.18);
+    outline: 1px solid rgba(184, 134, 11, 0.35);
+}
+
+.ln-badge-now {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 0 5px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    background: var(--secondary);
+    color: #1a1410;
+    font-weight: 700;
+}
+
+.ln-favor {
+    display: inline-block;
+    min-width: 1.5em;
+    text-align: center;
+    font-weight: 700;
+}
+
+.ln-favor-喜 { color: var(--wood); }
+.ln-favor-忌 { color: var(--fire); }
+.ln-favor-中 { color: var(--text-muted); }
+
+.ln-level {
+    font-weight: 600;
+}
+
+.ln-tone-good { color: #66bb6a; }
+.ln-tone-caution { color: #ffb74d; }
+.ln-tone-bad { color: #ef5350; }
+.ln-tone-neutral { color: var(--text-muted); }
+
+.ln-tags {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.ln-detail-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 12px 20px;
+    margin-bottom: 12px;
+}
+
+.ln-year-big {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--secondary-light);
+}
+
+.ln-gz-big {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+}
+
+.ln-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    width: 100%;
+}
+
+.ln-section-title {
+    margin: 14px 0 6px;
+    font-size: 1rem;
+    color: var(--secondary-light);
+    font-weight: 600;
+}
+
+.ln-detail-text,
+.ln-favor-note {
+    line-height: 1.7;
+    color: var(--text);
+    font-size: 0.92rem;
+}
+
+.ln-favor-note {
+    margin-top: 8px;
+    color: var(--text-muted);
+}
+
+.ln-inter-list {
+    margin: 6px 0 0 1.1em;
+    padding: 0;
+    line-height: 1.7;
+    font-size: 0.9rem;
+}
+
+.ln-inter-label {
+    display: inline-block;
+    min-width: 2.2em;
+    font-weight: 700;
+    margin-right: 4px;
+}
+
+.ln-inter-clash,
+.ln-inter-punish { color: var(--fire); }
+.ln-inter-harm { color: #ffb74d; }
+.ln-inter-combine { color: var(--wood); }
+
+.ln-score-line {
+    margin-top: 12px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.ln-god-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.ln-god-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.ln-god-card.ln-tone-good { border-left: 3px solid #66bb6a; }
+.ln-god-card.ln-tone-caution { border-left: 3px solid #ffb74d; }
+.ln-god-card.ln-tone-neutral { border-left: 3px solid var(--border-light); }
+
+.ln-god-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--secondary-light);
+    margin-bottom: 4px;
+}
+
+.ln-god-sum {
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+}
+
+.ln-god-detail {
+    font-size: 0.82rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+}
+
+@media (max-width: 600px) {
+    .ln-year-big,
+    .ln-gz-big {
+        font-size: 1.4rem;
+    }
+}
+
 .geju-step-desc {
     font-size: 0.85rem;
     line-height: 1.7;

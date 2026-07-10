@@ -2,7 +2,7 @@
  * sw.js — 八字命盤 Service Worker
  * cache-first 靜態資源；導航請求 network-first 回退首頁（離線可開啟）
  */
-const CACHE = 'baziai-v2';
+const CACHE = 'baziai-v3';
 const ASSETS = [
     '/',
     '/index.html',
@@ -15,6 +15,7 @@ const ASSETS = [
     '/js/bazi.js',
     '/js/lunming.js',
     '/js/lunming2.js',
+    '/js/liunian.js',
     '/js/geju.js',
     '/js/geju-ref.js',
     '/js/data.js',

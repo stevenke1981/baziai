@@ -206,4 +206,28 @@ describe('app.js 模組載入與排盤渲染', () => {
         const selected = document.getElementById('birthYear').selectedOptions[0];
         expect(selected.textContent).toMatch(/民國\s*77/);
     });
+
+    it('流年分頁：排盤後切換顯示流年表與今年說明', async () => {
+        await bootApp();
+
+        document.getElementById('birthYear').value = '1990';
+        document.getElementById('birthMonth').value = '5';
+        document.getElementById('birthDay').value = '15';
+        document.getElementById('birthHour').value = '12';
+        document.getElementById('gender').value = 'male';
+        document.getElementById('baziForm').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        await new Promise((r) => setTimeout(r, 250));
+
+        const tabBtn = document.querySelector('.tab-btn[data-tab="liunian"]');
+        expect(tabBtn).toBeTruthy();
+        tabBtn.dispatchEvent(new Event('click', { bubbles: true }));
+
+        const root = document.getElementById('liunianRoot');
+        expect(root.textContent).toMatch(/流\s*年/);
+        expect(root.querySelector('#lnTable')).toBeTruthy();
+        expect(root.querySelectorAll('#lnTable tbody tr').length).toBeGreaterThan(20);
+        // 含十神或干支字樣
+        expect(root.textContent).toMatch(/十神|甲|乙|丙|丁/);
+        expect(document.getElementById('tabLiunian').classList.contains('active')).toBe(true);
+    });
 });
