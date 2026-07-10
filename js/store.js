@@ -103,18 +103,8 @@ class Store {
 /** 全域單一實例 */
 const appStore = new Store();
 
-// 向後相容：保留 window._lastResult / _lastGejuResult getter/setter
+// 向後相容：暴露 appStore 供除錯
 if (typeof window !== 'undefined') {
-    Object.defineProperty(window, '_lastResult', {
-        get() { return appStore.getBaziResult(); },
-        set(val) { appStore.setBaziResult(val); },
-        configurable: true
-    });
-    Object.defineProperty(window, '_lastGejuResult', {
-        get() { return appStore.getGejuResult(); },
-        set(val) { appStore.setGejuResult(val); },
-        configurable: true
-    });
     window.appStore = appStore;
 }
 

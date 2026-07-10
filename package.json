@@ -13,10 +13,16 @@
     "build": "npm run lint && npm run test",
     "check": "npm run lint && npm run test"
   },
-  "keywords": ["bazi", "八字", "命理", "子平"],
+  "keywords": [
+    "bazi",
+    "八字",
+    "命理",
+    "子平"
+  ],
   "license": "MIT",
   "devDependencies": {
     "eslint": "^8.57.0",
+    "happy-dom": "^20.10.6",
     "prettier": "^3.2.0",
     "vitest": "^1.6.0"
   }

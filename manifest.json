@@ -3,6 +3,7 @@
   "short_name": "八字命盤",
   "description": "專業八字排盤工具 — 輸入出生年月日立即換算天干地支、十神、五行分析、喜用神",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#1a1410",
   "theme_color": "#8B0000",
@@ -10,12 +11,26 @@
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

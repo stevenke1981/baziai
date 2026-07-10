@@ -3,16 +3,24 @@
  * 處理表單輸入、曆法切換、結果渲染
  */
 
-// 引入所有模組（觸發 window 向後相容賦值）
-import './bazi.js';
-import './lunming.js';
-import './lunming2.js';
-import './geju.js';
-import './geju-ref.js';
-import './data.js';
-import './config.js';
-import './store.js';
-import './error.js';
+// 顯式 import 所需模組與常數（消除隱式全域依賴）
+import {
+    ELEMENT_COLORS,
+    STEM_ELEMENT_ARRAY as STEM_ELEMENT,
+    BRANCH_ELEMENT_ARRAY as BRANCH_ELEMENT,
+    STEM_YIN_YANG,
+    BRANCH_YIN_YANG,
+    ELEMENT_CYCLE,
+    ELEMENT_COLOR_VALUES
+} from './data.js';
+import { YEAR_SELECT_START, YEAR_SELECT_END_OFFSET } from './config.js';
+import { appStore } from './store.js';
+import { safeExecute, isValidDate, ErrorType } from './error.js';
+import { calculateBazi } from './bazi.js';
+import { renderLunming } from './lunming.js';
+import { renderLunming2 } from './lunming2.js';
+import { determineGeju, renderGeju } from './geju.js';
+import { renderGejuRef } from './geju-ref.js';
 
 // ============================================================
 // DOM 引用與狀態
@@ -29,11 +37,16 @@ import './error.js';
         birthMonth: document.getElementById('birthMonth'),
         birthDay: document.getElementById('birthDay'),
         birthHour: document.getElementById('birthHour'),
+        lateZi: document.getElementById('lateZi'),
         gender: document.getElementById('gender'),
         showAdvanced: document.getElementById('showAdvanced'),
+        copyBtn: document.getElementById('copyShare'),
+        printBtn: document.getElementById('printBtn'),
+        copyToast: document.getElementById('copyToast'),
         
         // 結果區
         resultArea: document.getElementById('resultArea'),
+        errorBanner: document.getElementById('errorBanner'),
         dayMasterContent: document.getElementById('dayMasterContent'),
         pillarsContent: document.getElementById('pillarsContent'),
         elementContent: document.getElementById('elementContent'),
@@ -68,34 +81,68 @@ import './error.js';
         updateDayOptions();
         bindEvents();
         initTabs();
-        
+
         // 預設填今天日期
         const today = new Date();
         el.birthYear.value = today.getFullYear();
         el.birthMonth.value = String(today.getMonth() + 1);
         updateDayOptions();
         el.birthDay.value = String(today.getDate());
+
+        // 分享連結（URL 參數）優先；否則還原 localStorage（F3 / F4）
+        let autoCalc = false;
+        if (applyShareParams()) {
+            autoCalc = true;
+        } else {
+            autoCalc = restoreState();
+        }
+
+        // 若有有效輸入則自動重算並顯示（刷新不丟失）
+        if (autoCalc) {
+            const y = parseInt(el.birthYear.value);
+            const m = parseInt(el.birthMonth.value);
+            const d = parseInt(el.birthDay.value);
+            if (y && m && d) {
+                handleSubmit();
+            }
+        }
     }
 
     // ============================================================
     // 日期下拉選單
     // ============================================================
 
-    /** 年份範圍 */
-    const YEAR_START = 1900;
-    const YEAR_END = new Date().getFullYear() + 10; // 到未來10年
+    /** 年份範圍（取自 config.js） */
+    const YEAR_END = new Date().getFullYear() + YEAR_SELECT_END_OFFSET;
 
-    function populateYears() {
+    /**
+     * 填入年份選項。
+     * option.value 一律為西元年；民國曆僅改變顯示文字，不改 value。
+     * @param {number|string|null} [preserveYear] 重建後要還原的西元年
+     */
+    function populateYears(preserveYear) {
+        const prev = preserveYear != null && preserveYear !== ''
+            ? String(preserveYear)
+            : (el.birthYear.value || '');
+
         el.birthYear.innerHTML = '<option value="">— 年 —</option>';
-        for (let y = YEAR_END; y >= YEAR_START; y--) {
+        for (let y = YEAR_END; y >= YEAR_SELECT_START; y--) {
             const opt = document.createElement('option');
-            opt.value = y;
-            // 民國年顯示
+            opt.value = String(y);
+            // 民國年僅改顯示：value 仍是西元年，避免切換後 +1911 誤算
             const roc = y - 1911;
-            opt.textContent = currentCalendar === 'western' 
-                ? `${y} 年` 
-                : `${y} 年 (民國 ${roc} 年)`;
+            if (currentCalendar === 'western') {
+                opt.textContent = `${y} 年`;
+            } else {
+                opt.textContent = roc > 0
+                    ? `民國 ${roc} 年（${y}）`
+                    : `${y} 年`;
+            }
             el.birthYear.appendChild(opt);
+        }
+
+        if (prev && el.birthYear.querySelector(`option[value="${prev}"]`)) {
+            el.birthYear.value = prev;
         }
     }
 
@@ -138,27 +185,30 @@ import './error.js';
     // ============================================================
     
     function switchCalendar(cal) {
+        // 切換前記住西元年（value 始終是西元），避免 rebuild 後選項被清空
+        const selectedWestern = el.birthYear.value;
         currentCalendar = cal;
-        
+
         // 更新按鈕狀態
         el.btnWestern.classList.toggle('active', cal === 'western');
         el.btnRoc.classList.toggle('active', cal === 'roc');
         el.btnWestern.setAttribute('aria-selected', cal === 'western');
         el.btnRoc.setAttribute('aria-selected', cal === 'roc');
-        
-        // 重新填入年份（顯示格式不同）
-        populateYears();
+
+        // 重新填入年份（僅顯示格式不同；還原已選西元年）
+        populateYears(selectedWestern);
+        updateDayOptions();
     }
 
+    /**
+     * 取得表單選定的西元年。
+     * birthYear option.value 一律存西元年，與目前曆法顯示模式無關。
+     */
     function getWesternYear() {
         const yearVal = el.birthYear.value;
         if (!yearVal) return null;
-        
-        const year = parseInt(yearVal);
-        if (currentCalendar === 'roc') {
-            return year + 1911;
-        }
-        return year;
+        const year = parseInt(yearVal, 10);
+        return Number.isFinite(year) ? year : null;
     }
 
     // ============================================================
@@ -178,8 +228,9 @@ import './error.js';
         el.showAdvanced.addEventListener('change', () => {
             el.advancedArea.classList.toggle('hidden', !el.showAdvanced.checked);
             // 如果有資料則重新渲染進階資訊
-            if (el.showAdvanced.checked && window._lastResult) {
-                renderAdvanced(window._lastResult);
+            const last = appStore.getBaziResult();
+            if (el.showAdvanced.checked && last) {
+                renderAdvanced(last);
             }
         });
         
@@ -190,7 +241,34 @@ import './error.js';
         
         // 表單提交
         el.form.addEventListener('submit', handleSubmit);
-        
+
+        // 複製分享連結（F3）
+        if (el.copyBtn) {
+            el.copyBtn.addEventListener('click', copyShareLink);
+        }
+
+        // 列印命盤（F5）
+        if (el.printBtn) {
+            el.printBtn.addEventListener('click', () => window.print());
+        }
+
+        // 分頁鍵盤無障礙：左右方向鍵導覽（F6）
+        const nav = document.querySelector('.tab-nav');
+        if (nav) {
+            nav.addEventListener('keydown', (e) => {
+                if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+                const tabs = Array.from(el.tabBtns);
+                const idx = tabs.findIndex((b) => b.classList.contains('active'));
+                if (idx < 0) return;
+                const next = e.key === 'ArrowRight'
+                    ? (idx + 1) % tabs.length
+                    : (idx - 1 + tabs.length) % tabs.length;
+                tabs[next].focus();
+                tabs[next].click();
+                e.preventDefault();
+            });
+        }
+
         // 年份/月份雙擊快速回到今天
         el.birthYear.addEventListener('dblclick', () => {
             const today = new Date();
@@ -227,31 +305,23 @@ import './error.js';
             content.classList.toggle('active', content.id === targetContentId);
         });
         
-        // 如果切換到論命頁，初始化論命內容
-        if (tabId === 'lunming' && typeof renderLunming === 'function') {
-            // 延遲一點讓過渡動畫執行
-            setTimeout(() => renderLunming(window._lastResult), 100);
+        // 由 store 取得最新八字結果，直接呼叫已 import 的渲染函數（移除 setTimeout hack）
+        const last = appStore.getBaziResult();
+
+        if (tabId === 'lunming') {
+            renderLunming(last);
         }
-        
-        // 如果切換到論命二頁，渲染量化評分
-        if (tabId === 'lunming2' && typeof renderLunming2 === 'function') {
-            setTimeout(() => renderLunming2(window._lastResult), 100);
+
+        if (tabId === 'lunming2') {
+            renderLunming2(last);
         }
-        
-        // 如果切換到格局頁，渲染格局分析
+
         if (tabId === 'geju') {
-            setTimeout(() => {
-                if (typeof renderGejuTab === 'function') {
-                    renderGejuTab(window._lastResult);
-                }
-            }, 100);
+            renderGejuTab(last);
         }
-        
-        // 如果切換到格局參考頁
-        if (tabId === 'gejuref' && typeof window.renderGejuRef === 'function') {
-            setTimeout(() => {
-                window.renderGejuRef(el.gejuRefRoot);
-            }, 50);
+
+        if (tabId === 'gejuref') {
+            renderGejuRef(el.gejuRefRoot);
         }
     }
 
@@ -260,74 +330,80 @@ import './error.js';
     // ============================================================
     
     function handleSubmit(e) {
-        e.preventDefault();
-        
-        // 驗證
-        const year = parseInt(el.birthYear.value);
-        const month = parseInt(el.birthMonth.value);
-        const day = parseInt(el.birthDay.value);
-        
-        if (!year || !month || !day) {
-            alert('請選擇完整的出生年月日');
+        if (e) e.preventDefault();
+        clearError();
+
+        const westernYear = getWesternYear();
+        const month = parseInt(el.birthMonth.value, 10);
+        const day = parseInt(el.birthDay.value, 10);
+
+        if (!westernYear || !month || !day) {
+            showError('請選擇完整的出生年月日');
             return;
         }
-        
-        const westernYear = currentCalendar === 'roc' ? year + 1911 : year;
-        
+
         if (!isValidDate(westernYear, month, day)) {
-            alert('請輸入有效的日期');
+            showError('請輸入有效的日期');
             return;
         }
-        
-        // 顯示載入狀態
-        showLoading();
-        
-        // 收集資料
+
+        // 時辰（晚子時：23:00-23:59 計入次日）
         const hourVal = el.birthHour.value;
         const hour = hourVal ? parseInt(hourVal) : null;
         const gender = el.gender.value || null;
-        
-        // 使用 setTimeout 讓 UI 更新
+
+        // 計算實際西元年月日（含晚子時跨日）
+        let y = westernYear, m = month, d = day;
+        if (el.lateZi && el.lateZi.checked && hour === 23) {
+            const dt = new Date(westernYear, month - 1, day + 1);
+            y = dt.getFullYear();
+            m = dt.getMonth() + 1;
+            d = dt.getDate();
+        }
+
+        // 暫存輸入（localStorage），重新整理自動還原
+        saveState({
+            year: westernYear, month, day, hour, gender,
+            calendar: currentCalendar, advanced: el.showAdvanced.checked,
+            lateZi: !!(el.lateZi && el.lateZi.checked)
+        });
+
+        showLoading();
+        runCalculation(y, m, d, hour, gender);
+    }
+
+    /** 實際計算 + 渲染 + 集中式狀態更新（分享連結 / localStorage 還原共用） */
+    function runCalculation(westernYear, month, day, hour, gender) {
+        // 使用 setTimeout 讓載入狀態先繪製
         setTimeout(() => {
-            try {
-                // 計算八字
-                const result = calculateBazi(westernYear, month, day, hour, gender);
-                
-                // 儲存結果供其他分頁使用
-                window._lastResult = result;
-                
-                // 渲染結果
-                renderResults(result);
-                
-                // 如果進階已勾選就渲染
-                if (el.showAdvanced.checked) {
-                    renderAdvanced(result);
+            const result = safeExecute(
+                () => calculateBazi(westernYear, month, day, hour, gender),
+                {
+                    errorType: ErrorType.CALCULATION,
+                    errorMessage: '八字計算失敗',
+                    onError: (appErr) => showError(appErr.getUserMessage())
                 }
-                
-                // 顯示結果區
-                el.resultArea.classList.remove('hidden');
-                
-                // 如果格局分頁有載入，預先運算格局供快速切換
-                if (typeof window.determineGeju === 'function') {
-                    try {
-                        window._lastGejuResult = determineGeju(result);
-                    } catch(e) {
-                        console.warn('格局預算略過:', e.message);
-                    }
-                }
-                
-                // 若目前顯示的是格局分頁，自動更新
-                if (el.tabGeju && el.tabGeju.classList.contains('active') && typeof renderGejuTab === 'function') {
-                    renderGejuTab(result);
-                }
-                
-                // 滾動到結果
-                el.resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
-            } catch (err) {
-                console.error('八字計算錯誤:', err);
-                alert('計算過程中發生錯誤，請確認輸入資料正確');
+            );
+            if (!result) return;
+
+            // 集中式狀態（取代 window._lastResult）
+            appStore.setBaziResult(result);
+
+            // 渲染結果
+            renderResults(result);
+            if (el.showAdvanced.checked) renderAdvanced(result);
+            el.resultArea.classList.remove('hidden');
+
+            // 預先運算格局，供快速切換（失敗僅記錄）
+            safeExecute(
+                () => appStore.setGejuResult(determineGeju(result)),
+                { onError: (err) => console.warn('格局預算略過:', err.message) }
+            );
+
+            if (el.tabGeju && el.tabGeju.classList.contains('active')) {
+                renderGejuTab(result);
             }
+            el.resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
     }
 
@@ -678,15 +754,142 @@ import './error.js';
     // 工具函數
     // ============================================================
     
+    /** 取得五行顏色值（改讀 data.js.ELEMENT_COLOR_VALUES，消除重複色表） */
     function getElementColorVar(element) {
-        const map = {
-            '木': '#2e7d32',
-            '火': '#d32f2f',
-            '土': '#8d6e3f',
-            '金': '#bdbdbd',
-            '水': '#1565c0'
-        };
-        return map[element] || '#666';
+        return ELEMENT_COLOR_VALUES[element] || '#666';
+    }
+
+    /** 顯示頁內錯誤條（取代 alert） */
+    function showError(message) {
+        if (!el.errorBanner) return;
+        el.errorBanner.textContent = message;
+        el.errorBanner.classList.remove('hidden');
+        el.errorBanner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /** 清除頁內錯誤條 */
+    function clearError() {
+        if (!el.errorBanner) return;
+        el.errorBanner.textContent = '';
+        el.errorBanner.classList.add('hidden');
+    }
+
+    // ===========================================================
+    // 分享連結 / localStorage 還原 / 列印（F3 / F4 / F5）
+    // ===========================================================
+
+    const STORAGE_KEY = 'baziai:last-input';
+
+    /** 暫存最後一次輸入（F4） */
+    function saveState(state) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            // localStorage 不可用例外忽略（隱私模式等）
+        }
+    }
+
+    /** 從 localStorage 還原輸入；成功回傳 true（F4） */
+    function restoreState() {
+        let saved;
+        try {
+            saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+        } catch (e) {
+            saved = null;
+        }
+        if (!saved) return false;
+        // 先切曆法再寫年份，避免 rebuild 選項時丟失（saved.year 為西元年）
+        if (saved.calendar === 'roc') switchCalendar('roc');
+        if (typeof saved.year === 'number') el.birthYear.value = String(saved.year);
+        if (typeof saved.month === 'number') el.birthMonth.value = String(saved.month);
+        if (typeof saved.day === 'number') el.birthDay.value = String(saved.day);
+        if (typeof saved.hour === 'number') el.birthHour.value = String(saved.hour);
+        if (typeof saved.gender === 'string') el.gender.value = saved.gender;
+        if (el.showAdvanced) el.showAdvanced.checked = !!saved.advanced;
+        if (el.lateZi) el.lateZi.checked = !!saved.lateZi;
+        updateDayOptions();
+        return !!(saved.year && saved.month && saved.day);
+    }
+
+    /** 由 URL query 解碼分享參數並自動填入；成功回傳 true（F3） */
+    function applyShareParams() {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has('y') || !params.has('m') || !params.has('d')) return false;
+        const y = parseInt(params.get('y'), 10);
+        const m = parseInt(params.get('m'), 10);
+        const d = parseInt(params.get('d'), 10);
+        if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d)) return false;
+
+        // 先切曆法再寫年份（y 為西元年）
+        if (params.get('cal') === 'roc') switchCalendar('roc');
+        el.birthYear.value = String(y);
+        el.birthMonth.value = String(m);
+        el.birthDay.value = String(d);
+        const h = params.get('h');
+        if (h !== null) el.birthHour.value = h;
+        const g = params.get('g');
+        if (g === 'male' || g === 'female') el.gender.value = g;
+        if (params.get('adv') === '1' && el.showAdvanced) el.showAdvanced.checked = true;
+        if (params.get('lz') === '1' && el.lateZi) el.lateZi.checked = true;
+        updateDayOptions();
+        return true;
+    }
+
+    /** 由目前表單建立分享連結（F3） */
+    function buildShareUrl() {
+        const year = getWesternYear();
+        const month = parseInt(el.birthMonth.value, 10);
+        const day = parseInt(el.birthDay.value, 10);
+        if (!year || !month || !day) return null;
+        const p = new URLSearchParams();
+        p.set('y', year);
+        p.set('m', month);
+        p.set('d', day);
+        const h = el.birthHour.value;
+        if (h) p.set('h', h);
+        const g = el.gender.value;
+        if (g) p.set('g', g);
+        p.set('cal', currentCalendar);
+        if (el.showAdvanced && el.showAdvanced.checked) p.set('adv', '1');
+        if (el.lateZi && el.lateZi.checked) p.set('lz', '1');
+        const base = window.location.origin + window.location.pathname;
+        return `${base}?${p.toString()}`;
+    }
+
+    /** 複製分享連結到剪貼簿（F3） */
+    function copyShareLink() {
+        const url = buildShareUrl();
+        if (!url) {
+            showError('請先填入出生年月日再產生分享連結');
+            return;
+        }
+        const done = () => showToast('分享連結已複製到剪貼簿');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(done).catch(() => fallbackCopy(url, done));
+        } else {
+            fallbackCopy(url, done);
+        }
+    }
+
+    function fallbackCopy(text, done) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { showError('無法複製，請手動複製網址'); }
+        document.body.removeChild(ta);
+    }
+
+    /** 暫時提示（複製成功等） */
+    let toastTimer = null;
+    function showToast(message) {
+        if (!el.copyToast) return;
+        el.copyToast.textContent = message;
+        el.copyToast.classList.remove('hidden');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.copyToast.classList.add('hidden'), 2200);
     }
 
     // ============================================================
@@ -710,47 +913,15 @@ import './error.js';
             return;
         }
         
-        // 確認格局引擎已載入
-        const gejuFunc = (typeof window.determineGeju === 'function') ? window.determineGeju : null;
-        const renderFunc = (typeof window.renderGeju === 'function') ? window.renderGeju : null;
-        
-        if (!gejuFunc) {
-            root.innerHTML = `
-                <div class="card">
-                    <div class="card-title">格 局 判 定</div>
-                    <div style="text-align:center;padding:30px;color:var(--fire);">
-                        格局引擎尚未載入（geju.js），請重新整理頁面。
-                    </div>
-                </div>
-            `;
-            return;
-        }
-        
-        // 嘗試使用已快取的格局結果
-        if (window._lastGejuResult && window._lastResult === baziResult) {
-            if (renderFunc) {
-                renderFunc(window._lastGejuResult, root);
-                return;
-            }
-        }
-        
-        // 使用格局引擎分析（含錯誤處理）
+        // 使用已 import 的格局引擎（不再依賴 window 全域）
+        // 若 store 已有該結果則直接複用，否則運算
+        const cachedGeju = appStore.getGejuResult();
         try {
-            const gejuResult = gejuFunc(baziResult);
-            window._lastGejuResult = gejuResult;
-            
-            if (renderFunc) {
-                renderFunc(gejuResult, root);
-            } else {
-                root.innerHTML = `
-                    <div class="card">
-                        <div class="card-title">格 局 判 定</div>
-                        <div style="text-align:center;padding:30px;color:var(--fire);">
-                            渲染函數未定義（renderGeju），請重新整理頁面。
-                        </div>
-                    </div>
-                `;
+            const gejuResult = cachedGeju || determineGeju(baziResult);
+            if (!cachedGeju) {
+                appStore.setGejuResult(gejuResult);
             }
+            renderGeju(gejuResult, root);
         } catch (err) {
             console.error('格局分析錯誤:', err);
             root.innerHTML = `

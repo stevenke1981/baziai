@@ -287,8 +287,8 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
      * @returns {string} 'same' | 'birth' | 'born' | 'restrict' | 'restricted'
      */
     function getRelation(dm, other) {
-        let i1 = ELEMENTS.indexOf(dm);
-        let i2 = ELEMENTS.indexOf(other);
+        const i1 = ELEMENTS.indexOf(dm);
+        const i2 = ELEMENTS.indexOf(other);
         if (i1 === -1 || i2 === -1) return 'unknown';
         if (i1 === i2) return 'same';
         // 相生: 木→火→土→金→水→木
@@ -301,12 +301,12 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
     }
 
     function getElementColorClass(el) {
-        let map = { '木': 'element-wood', '火': 'element-fire', '土': 'element-earth', '金': 'element-metal', '水': 'element-water' };
+        const map = { '木': 'element-wood', '火': 'element-fire', '土': 'element-earth', '金': 'element-metal', '水': 'element-water' };
         return map[el] || '';
     }
 
     function getScoreLevel(score, max) {
-        let pct = score / max;
+        const pct = score / max;
         if (pct >= 0.8) return 'very-high';
         if (pct >= 0.5) return 'high';
         if (pct >= 0.25) return 'mid';
@@ -453,14 +453,14 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
      * 依據格局推論喜用神與忌神
      */
     function getFavorableUnfavorable(dmElement, judgment) {
-        let idx = ELEMENTS.indexOf(dmElement);
+        const idx = ELEMENTS.indexOf(dmElement);
         if (idx === -1) return { favorite: [], unfavorite: [], analysis: '', advice: '' };
 
-        let birthMe  = ELEMENTS[(idx + 4) % 5]; // 印（生我）
-        let sameMe   = ELEMENTS[idx];            // 比劫（同我）
-        let iBorn    = ELEMENTS[(idx + 1) % 5];  // 食傷（我生）
-        let iRestrict = ELEMENTS[(idx + 2) % 5]; // 財（我剋）
-        let restrictMe = ELEMENTS[(idx + 3) % 5];// 官殺（剋我）
+        const birthMe  = ELEMENTS[(idx + 4) % 5]; // 印（生我）
+        const sameMe   = ELEMENTS[idx];            // 比劫（同我）
+        const iBorn    = ELEMENTS[(idx + 1) % 5];  // 食傷（我生）
+        const iRestrict = ELEMENTS[(idx + 2) % 5]; // 財（我剋）
+        const restrictMe = ELEMENTS[(idx + 3) % 5];// 官殺（剋我）
 
         let favorite, unfavorite, analysis, advice;
 
@@ -503,24 +503,24 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
     function detectSpecialPatterns(baziResult, scores) {
         if (!baziResult || !scores) return [];
 
-        let patterns = [];
-        let dm = baziResult.dayMaster;
-        let dmElement = dm.element;
-        let pillars = baziResult.pillars;
-        let totalScore = scores.totalScore;
+        const patterns = [];
+        const dm = baziResult.dayMaster;
+        const dmElement = dm.element;
+        const pillars = baziResult.pillars;
+        const totalScore = scores.totalScore;
 
         // 收集所有天干地支及其五行（相容3柱/4柱）
         const stems = pillars.map(function(p) { return p.stem; });
         const branches = pillars.map(function(p) { return p.branch; });
-        let pillarLabels = ['年', '月', '日'];
+        const pillarLabels = ['年', '月', '日'];
         if (pillars.length === 4) pillarLabels.push('時');
-        let stemElements = stems.map(function(s) { return STEM_ELEMENT[s]; });
-        let branchElements = branches.map(function(b) { return BRANCH_ELEMENT[b]; });
+        const stemElements = stems.map(function(s) { return STEM_ELEMENT[s]; });
+        const branchElements = branches.map(function(b) { return BRANCH_ELEMENT[b]; });
 
         // 各元素計數 (stems 中排除日主自身)
-        let stemCount = {};
-        let branchCount = {};
-        let allCount = {};
+        const stemCount = {};
+        const branchCount = {};
+        const allCount = {};
         ELEMENTS.forEach(function(e) {
             stemCount[e] = 0;
             branchCount[e] = 0;
@@ -539,10 +539,10 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
             allCount[e]++;
         });
 
-        let monthBranch = branches[1];
-        let monthSeason = getSeason(monthBranch);
-        let dayStem = stems[2];
-        let dayBranch = branches[2];
+        const monthBranch = branches[1];
+        const monthSeason = getSeason(monthBranch);
+        const dayStem = stems[2];
+        const dayBranch = branches[2];
 
         // ────── 1. 專旺格檢測 ──────
         // 條件：月令旺(40) + 通根高 + 無剋星出現
@@ -592,20 +592,20 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
         }
 
         // 從官殺格：官殺(剋日主)元素占天干主導，且無印星轉化
-        let dmIdx = ELEMENTS.indexOf(dmElement);
-        let restrictEl = ELEMENTS[(dmIdx + 3) % 5]; // 剋日主者
-        let restrictCount = (stemCount[restrictEl] || 0) + (branchCount[restrictEl] || 0);
-        let birthEl = ELEMENTS[(dmIdx + 4) % 5]; // 生日主者
-        let birthCount = (stemCount[birthEl] || 0) + (branchCount[birthEl] || 0);
+        const dmIdx = ELEMENTS.indexOf(dmElement);
+        const restrictEl = ELEMENTS[(dmIdx + 3) % 5]; // 剋日主者
+        const restrictCount = (stemCount[restrictEl] || 0) + (branchCount[restrictEl] || 0);
+        const birthEl = ELEMENTS[(dmIdx + 4) % 5]; // 生日主者
+        const birthCount = (stemCount[birthEl] || 0) + (branchCount[birthEl] || 0);
 
         if (totalScore <= 20 && restrictCount >= 5 && birthCount <= 1) {
             patterns.push(makePattern('congguan', '從官殺格'));
         }
 
         // 從財格：財(日主所剋)元素主導
-        let restrictEl2 = ELEMENTS[(dmIdx + 2) % 5]; // 日主所剋者
-        let restrictCount2 = (stemCount[restrictEl2] || 0) + (branchCount[restrictEl2] || 0);
-        let sameCount2 = (stemCount[dmElement] || 0) + (branchCount[dmElement] || 0);
+        const restrictEl2 = ELEMENTS[(dmIdx + 2) % 5]; // 日主所剋者
+        const restrictCount2 = (stemCount[restrictEl2] || 0) + (branchCount[restrictEl2] || 0);
+        const sameCount2 = (stemCount[dmElement] || 0) + (branchCount[dmElement] || 0);
 
         if (totalScore <= 20 && restrictCount2 >= 5 && sameCount2 <= 2 && restrictCount <= 1) {
             patterns.push(makePattern('congcai', '從財格'));
@@ -623,13 +623,13 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
         }
 
         // ────── 4. 魁罡格 ──────
-        let KUI_GANG = { '庚辰': 1, '庚戌': 1, '壬辰': 1, '戊戌': 1 };
+        const KUI_GANG = { '庚辰': 1, '庚戌': 1, '壬辰': 1, '戊戌': 1 };
         if (KUI_GANG[dayStem + dayBranch]) {
             patterns.push(makePattern('kuigang', '魁罡格'));
         }
 
         // ────── 5. 日貴格 ──────
-        let RI_GUI = { '丁酉': 1, '丁亥': 1, '癸巳': 1, '癸卯': 1 };
+        const RI_GUI = { '丁酉': 1, '丁亥': 1, '癸巳': 1, '癸卯': 1 };
         if (RI_GUI[dayStem + dayBranch]) {
             patterns.push(makePattern('rigui', '日貴格'));
         }
@@ -638,7 +638,7 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
     }
 
     function makePattern(id, displayName) {
-        let ref = SPECIAL_PATTERN_DB[id];
+        const ref = SPECIAL_PATTERN_DB[id];
         if (!ref) return { id: id, name: displayName, category: '特殊' };
         return {
             id: id,
@@ -659,10 +659,10 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
     /** 依關鍵字查詢特殊格局 */
     function querySpecialPattern(keyword) {
         if (!keyword) return null;
-        let kw = keyword.trim();
-        let results = [];
-        for (let id in SPECIAL_PATTERN_DB) {
-            let p = SPECIAL_PATTERN_DB[id];
+        const kw = keyword.trim();
+        const results = [];
+        for (const id in SPECIAL_PATTERN_DB) {
+            const p = SPECIAL_PATTERN_DB[id];
             if (p.name.indexOf(kw) !== -1 ||
                 p.category.indexOf(kw) !== -1 ||
                 (p.element && p.element.indexOf(kw) !== -1) ||
@@ -677,9 +677,9 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
 
     /** 取得所有格局分類列表 */
     function getAllPatternCategories() {
-        let cats = {};
-        for (let id in SPECIAL_PATTERN_DB) {
-            let p = SPECIAL_PATTERN_DB[id];
+        const cats = {};
+        for (const id in SPECIAL_PATTERN_DB) {
+            const p = SPECIAL_PATTERN_DB[id];
             if (!cats[p.category]) cats[p.category] = [];
             cats[p.category].push({ id: id, name: p.name, element: p.element });
         }
@@ -691,10 +691,10 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
     // ============================================================
 
     function getMonthDesc(scores) {
-        let s = scores.monthScore;
-        let branch = scores.details.monthBranch;
-        let season = scores.details.monthSeason;
-        let seasonLabel = SEASON_LABELS[season] || season;
+        const s = scores.monthScore;
+        const branch = scores.details.monthBranch;
+        const season = scores.details.monthSeason;
+        const seasonLabel = SEASON_LABELS[season] || season;
 
         let status;
         if (s >= 32) status = '得令，旺相得力';
@@ -706,28 +706,28 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
     }
 
     function getRootDesc(scores) {
-        let details = scores.details.rootDetails;
+        const details = scores.details.rootDetails;
         if (!details || details.length === 0) return '四柱地支無通根，日主無根';
-        let descs = details.map(function(d) {
-            let typeLabel = d.type === 'main' ? '本氣' : (d.type === 'mid' ? '中氣' : '餘氣');
+        const descs = details.map(function(d) {
+            const typeLabel = d.type === 'main' ? '本氣' : (d.type === 'mid' ? '中氣' : '餘氣');
             return d.pillar + '柱「' + d.branch + '」藏' + d.stem + '（' + typeLabel + ' +' + d.points + '分）';
         });
         return descs.join('；');
     }
 
     function getPeerDesc(scores) {
-        let details = scores.details.peerDetails;
+        const details = scores.details.peerDetails;
         if (!details || details.length === 0) return '天干無比劫、印星幫扶';
-        let descs = details.map(function(d) {
+        const descs = details.map(function(d) {
             return d.pillar + '干「' + d.stem + '」（' + d.type + '）';
         });
         return descs.join('、');
     }
 
     function getSupportDesc(scores) {
-        let details = scores.details.supportDetails;
+        const details = scores.details.supportDetails;
         if (!details || details.length === 0) return '月干、時干、日支無明顯生扶';
-        let descs = details.map(function(d) {
+        const descs = details.map(function(d) {
             return d.position + '「' + d.stem + '」（+' + d.points + '分）';
         });
         return descs.join('、');
@@ -738,7 +738,7 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
     // ============================================================
 
     function renderLunming2(baziResult) {
-        let root = document.getElementById('lunming2Root');
+        const root = document.getElementById('lunming2Root');
         if (!root) return;
 
         if (!baziResult) {
@@ -746,18 +746,18 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
             return;
         }
 
-        let scores = calculateDayMasterStrength(baziResult);
+        const scores = calculateDayMasterStrength(baziResult);
         if (!scores) {
             root.innerHTML = '<div class="loading">評分計算失敗</div>';
             return;
         }
 
-        let dm = baziResult.dayMaster;
-        let dmElement = dm.element;
-        let elClass = getElementColorClass(dmElement);
+        const dm = baziResult.dayMaster;
+        const dmElement = dm.element;
+        const elClass = getElementColorClass(dmElement);
 
         // 判定 class
-        let judgmentClass = (scores.judgment === '身強' || scores.judgment === '偏強') ? 'lm2-strong' : 'lm2-weak';
+        const judgmentClass = (scores.judgment === '身強' || scores.judgment === '偏強') ? 'lm2-strong' : 'lm2-weak';
 
         let html = '';
 
@@ -813,8 +813,8 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
 
     /** 單一面向進度條 */
     function renderAspect(title, note, score, max, desc) {
-        let pct = Math.round((score / max) * 100);
-        let level = getScoreLevel(score, max);
+        const pct = Math.round((score / max) * 100);
+        const level = getScoreLevel(score, max);
         return '<div class="lm2-aspect">'
             + '<div class="lm2-aspect-header">'
                 + '<span class="lm2-aspect-title">' + title + '</span>'
@@ -830,9 +830,9 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
 
     /** 詳細分數網格 */
     function renderDetailGrid(scores, dmElement) {
-        let details = scores.details;
-        let elClass = getElementColorClass(dmElement);
-        let jClass = (scores.judgment === '身強' || scores.judgment === '偏強') ? 'lm2-strong' : 'lm2-weak';
+        const details = scores.details;
+        const elClass = getElementColorClass(dmElement);
+        const jClass = (scores.judgment === '身強' || scores.judgment === '偏強') ? 'lm2-strong' : 'lm2-weak';
 
         return '<div class="lm2-detail-grid">'
             + '<div class="lm2-detail-item"><div class="lm2-detail-label">日主五行</div><div class="lm2-detail-value ' + elClass + '">' + dmElement + '</div></div>'
@@ -848,14 +848,14 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
 
     /** 喜忌區 */
     function renderFavoriteSection(scores) {
-        let fav = scores.favoriteElements || [];
-        let unfav = scores.unfavoriteElements || [];
+        const fav = scores.favoriteElements || [];
+        const unfav = scores.unfavoriteElements || [];
 
-        let favHTML = fav.map(function(el) {
+        const favHTML = fav.map(function(el) {
             return '<span class="' + getElementColorClass(el) + '" style="font-size:1.8rem;font-weight:700;">' + el + '</span>';
         }).join(' ') || '<span style="color:let(--text-muted);">—</span>';
 
-        let unfavHTML = unfav.map(function(el) {
+        const unfavHTML = unfav.map(function(el) {
             return '<span class="' + getElementColorClass(el) + '" style="font-size:1.8rem;font-weight:700;opacity:0.6;">' + el + '</span>';
         }).join(' ') || '<span style="color:let(--text-muted);">—</span>';
 
@@ -869,16 +869,16 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
 
     /** 對比原始喜忌 */
     function renderComparison(baziResult, scores) {
-        let original = baziResult.favoriteElement;
+        const original = baziResult.favoriteElement;
         if (!original) return '<div class="loading">無原始喜忌資料可比較</div>';
 
-        let m1Fav = (original.favorite || []).join('、') || '—';
-        let m1Unf = (original.unfavorite || []).join('、') || '—';
-        let m2Fav = (scores.favoriteElements || []).join('、') || '—';
-        let m2Unf = (scores.unfavoriteElements || []).join('、') || '—';
+        const m1Fav = (original.favorite || []).join('、') || '—';
+        const m1Unf = (original.unfavorite || []).join('、') || '—';
+        const m2Fav = (scores.favoriteElements || []).join('、') || '—';
+        const m2Unf = (scores.unfavoriteElements || []).join('、') || '—';
 
-        let same = (m1Fav === m2Fav && m1Unf === m2Unf);
-        let rowClass = same ? 'lm2-match' : 'lm2-diff';
+        const same = (m1Fav === m2Fav && m1Unf === m2Unf);
+        const rowClass = same ? 'lm2-match' : 'lm2-diff';
 
         return '<div class="lm2-compare-box">'
             + '<div class="lm2-compare-row ' + rowClass + '">'
@@ -912,13 +912,13 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
         html += '<div class="card-title">✦ 特殊格局檢測</div>';
 
         detected.forEach(function(p, idx) {
-            let catColors = {
+            const catColors = {
                 '專旺格': 'let(--fire)',
                 '從格': 'let(--water)',
                 '一氣格': 'let(--secondary-light)',
                 '神煞格': 'let(--wood)'
             };
-            let catColor = catColors[p.category] || 'let(--text-muted)';
+            const catColor = catColors[p.category] || 'let(--text-muted)';
 
             html += '<div class="lm2-pattern-item" style="border-left-color:' + catColor + ';">';
             html += '<div class="lm2-pattern-header">';
@@ -939,13 +939,13 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
 
             // 格局喜忌
             if (p.defaultFav && p.defaultFav.length > 0) {
-                let favEls = p.defaultFav.map(function(e) {
+                const favEls = p.defaultFav.map(function(e) {
                     return '<span class="' + getElementColorClass(e) + '" style="font-weight:700;">' + e + '</span>';
                 }).join(' ');
                 html += '<div class="lm2-pattern-fav">✓ 喜：' + favEls + '</div>';
             }
             if (p.defaultUnfav && p.defaultUnfav.length > 0) {
-                let unfEls = p.defaultUnfav.map(function(e) {
+                const unfEls = p.defaultUnfav.map(function(e) {
                     return '<span class="' + getElementColorClass(e) + '" style="font-weight:700;opacity:0.6;">' + e + '</span>';
                 }).join(' ');
                 html += '<div class="lm2-pattern-unfav">✗ 忌：' + unfEls + '</div>';
@@ -962,8 +962,8 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
 
     /** 渲染特殊格局查詢UI */
     function renderPatternQueryUI(scores) {
-        let cats = getAllPatternCategories();
-        let catKeys = Object.keys(cats);
+        const cats = getAllPatternCategories();
+        const catKeys = Object.keys(cats);
 
         let html = '<div class="card">';
         html += '<div class="card-title">📖 特殊格局查詢</div>';
@@ -987,7 +987,7 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
             html += '<div class="lm2-browser-cat-title">' + cat + '</div>';
             html += '<div class="lm2-browser-items">';
             cats[cat].forEach(function(p) {
-                let elDot = p.element
+                const elDot = p.element
                     ? '<span class="' + getElementColorClass(p.element) + '" style="font-weight:700;">●</span> '
                     : '';
                 html += '<div class="lm2-browser-item" onclick="showPatternDetail(\'' + p.id + '\')">'
@@ -1008,18 +1008,18 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
 
     /** 綁定查詢事件 */
     function bindPatternQuery() {
-        let input = document.getElementById('patternQuery');
-        let btn = document.getElementById('patternQueryBtn');
-        let result = document.getElementById('patternQueryResult');
+        const input = document.getElementById('patternQuery');
+        const btn = document.getElementById('patternQueryBtn');
+        const result = document.getElementById('patternQueryResult');
         if (!input || !btn || !result) return;
 
         function doQuery() {
-            let kw = input.value.trim();
+            const kw = input.value.trim();
             if (!kw) {
                 result.innerHTML = '<div class="lm2-query-hint">請輸入格局名稱</div>';
                 return;
             }
-            let matches = querySpecialPattern(kw);
+            const matches = querySpecialPattern(kw);
             if (!matches || matches.length === 0) {
                 result.innerHTML = '<div class="lm2-query-empty">❌ 未找到「' + kw + '」相關格局</div>';
                 return;
@@ -1039,13 +1039,13 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
 
     /** 渲染單個格局詳細 */
     function renderPatternDetail(p) {
-        let catColors = {
+        const catColors = {
             '專旺格': 'let(--fire)',
             '從格': 'let(--water)',
             '一氣格': 'let(--secondary-light)',
             '神煞格': 'let(--wood)'
         };
-        let catColor = catColors[p.category] || 'let(--text-muted)';
+        const catColor = catColors[p.category] || 'let(--text-muted)';
 
         let html = '<div class="lm2-pattern-detail-card" id="detail-' + p.id + '">';
         html += '<div class="lm2-pattern-detail-header">';
@@ -1064,13 +1064,13 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
         html += '<div class="lm2-pattern-detail-advice">💡 ' + (p.advice || '') + '</div>';
 
         if (p.defaultFav && p.defaultFav.length > 0) {
-            let favEls = p.defaultFav.map(function(e) {
+            const favEls = p.defaultFav.map(function(e) {
                 return '<span class="' + getElementColorClass(e) + '" style="font-weight:700;">' + e + '</span>';
             }).join(' ');
             html += '<div class="lm2-pattern-detail-fav">✓ 喜用：' + favEls + '</div>';
         }
         if (p.defaultUnfav && p.defaultUnfav.length > 0) {
-            let unfEls = p.defaultUnfav.map(function(e) {
+            const unfEls = p.defaultUnfav.map(function(e) {
                 return '<span class="' + getElementColorClass(e) + '" style="font-weight:700;opacity:0.6;">' + e + '</span>';
             }).join(' ');
             html += '<div class="lm2-pattern-detail-unfav">✗ 忌：' + unfEls + '</div>';
@@ -1085,18 +1085,18 @@ const BRANCHES = '子丑寅卯辰巳午未申酉戌亥';
     // ============================================================
 
     globalThis.togglePatternBrowser = function() {
-        let body = document.getElementById('patternBrowserBody');
-        let arrow = document.querySelector('.lm2-browser-arrow');
+        const body = document.getElementById('patternBrowserBody');
+        const arrow = document.querySelector('.lm2-browser-arrow');
         if (!body || !arrow) return;
-        let isHidden = body.style.display === 'none';
+        const isHidden = body.style.display === 'none';
         body.style.display = isHidden ? 'block' : 'none';
         arrow.textContent = isHidden ? '▲' : '▼';
     };
 
     globalThis.showPatternDetail = function(id) {
-        let area = document.getElementById('patternDetailArea');
+        const area = document.getElementById('patternDetailArea');
         if (!area) return;
-        let ref = SPECIAL_PATTERN_DB[id];
+        const ref = SPECIAL_PATTERN_DB[id];
         if (!ref) {
             area.innerHTML = '<div class="lm2-query-empty">未找到該格局資訊</div>';
             return;

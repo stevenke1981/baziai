@@ -1575,3 +1575,23 @@
         padding: 6px 8px;
     }
 }
+
+/* 頁內錯誤條（取代 alert） */
+.error-banner {
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: rgba(211, 47, 47, 0.12);
+    border: 1px solid var(--fire, #d32f2f);
+    color: var(--fire, #d32f2f);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.error-banner.hidden {
+    display: none;
+}
+
+.hidden {
+    display: none !important;
+}

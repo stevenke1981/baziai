@@ -567,7 +567,7 @@ function generateComprehensiveAnalysis(
     tenGodUsed, stemUsed, transparentPositions, gejuInfo,
     sameTenGodPositions, branchPowerCheck, specialCheck
 ) {
-    let lines = [];
+    const lines = [];
     
     lines.push(`【${finalGeju}】`);
     lines.push('');

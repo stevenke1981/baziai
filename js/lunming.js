@@ -267,7 +267,7 @@ export function renderCurrentBaziAnalysis(result) {
     // 日主強弱分析
     const strengthText = fe.isStrong ? '日主旺盛，精力充沛' : (fe.isWeak ? '日主衰弱，宜養精蓄銳' : '日主中和，五行平穩');
     
-    let html = `
+    const html = `
         <div class="card lm-analysis-card">
             <div class="card-title">📜 當前命盤論命 — ${dm.stem}${dm.branch} ${dm.element}${dm.yinyang}日主</div>
             <div class="lm-analysis-grid">
@@ -314,7 +314,7 @@ export function renderClassicalContent(baziResult) {
     const element = dm ? dm.element : null;
     const stem = dm ? dm.stem : null;
     
-    let html = `
+    const html = `
         <div class="lm-sections">
             <div class="card">
                 <div class="card-title">📚 《子平淵海大全》分類論命</div>
