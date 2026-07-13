@@ -1,143 +1,193 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>八字命盤 — 子平淵海論命</title>
-    <meta name="description" content="專業八字排盤工具 — 輸入出生年月日立即換算天干地支、十神、五行分析、喜用神，附《子平淵海大全》論命經典">
-    <meta name="theme-color" content="#8B0000">
-    <meta property="og:title" content="八字命盤 — 子平淵海論命">
-    <meta property="og:description" content="專業八字排盤工具，輸入出生年月日立即換算天干地支、十神、五行分析、喜用神">
-    <meta property="og:type" content="website">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages.css">
-</head>
-<body>
-    <!-- ======== 頁首 ======== -->
-    <header class="header">
-        <h1>
-            八字命盤
-            <span class="sub">八 字 排 盤 · 五 行 分 析 · 淵 海 論 命</span>
-        </h1>
-        <p>輸入出生日期 · 立即排盤 · 參照古籍論命</p>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>八字命盤 — 子平淵海論命</title>
+        <meta
+            name="description"
+            content="專業八字排盤工具 — 輸入出生年月日立即換算天干地支、十神、五行分析、喜用神，附《子平淵海大全》論命經典"
+        />
+        <meta name="theme-color" content="#8B0000" />
+        <meta property="og:title" content="八字命盤 — 子平淵海論命" />
+        <meta
+            property="og:description"
+            content="專業八字排盤工具，輸入出生年月日立即換算天干地支、十神、五行分析、喜用神"
+        />
+        <meta property="og:type" content="website" />
+        <link rel="manifest" href="manifest.json" />
+        <link rel="apple-touch-icon" href="icon-192.png" />
+        <link rel="stylesheet" href="css/base.css" />
+        <link rel="stylesheet" href="css/layout.css" />
+        <link rel="stylesheet" href="css/components.css" />
+        <link rel="stylesheet" href="css/pages.css" />
+    </head>
+    <body>
+        <!-- ======== 頁首 ======== -->
+        <header class="header">
+            <div class="brand-seal" aria-hidden="true">命</div>
+            <p class="header-eyebrow">東方命理 · 四柱推演</p>
+            <h1>
+                八字命理書
+                <span class="sub">排 盤 · 論 命 · 歲 運 · 干 支 互 動</span>
+            </h1>
+            <p>從四柱氣勢讀懂自己的節奏，以傳統智慧整理人生選擇</p>
 
-        <!-- 分頁導航 -->
-        <nav class="tab-nav" role="tablist">
-            <button class="tab-btn active" data-tab="paipan" role="tab" aria-selected="true">排 盤</button>
-            <button class="tab-btn" data-tab="lunming" role="tab" aria-selected="false">論 命</button>
-            <button class="tab-btn" data-tab="lunming2" role="tab" aria-selected="false">論命二</button>
-            <button class="tab-btn" data-tab="liunian" role="tab" aria-selected="false">流 年</button>
-            <button class="tab-btn" data-tab="geju" role="tab" aria-selected="false">格 局</button>
-            <button class="tab-btn" data-tab="gejuref" role="tab" aria-selected="false">格 典</button>
-        </nav>
-    </header>
+            <!-- 分頁導航 -->
+            <nav class="tab-nav" role="tablist">
+                <button class="tab-btn active" data-tab="paipan" role="tab" aria-selected="true">排 盤</button>
+                <button class="tab-btn" data-tab="lunming" role="tab" aria-selected="false">論 命</button>
+                <button class="tab-btn" data-tab="lunming2" role="tab" aria-selected="false">論命二</button>
+                <button class="tab-btn" data-tab="liunian" role="tab" aria-selected="false">流 年</button>
+                <button class="tab-btn" data-tab="geju" role="tab" aria-selected="false">格 局</button>
+                <button class="tab-btn" data-tab="gejuref" role="tab" aria-selected="false">格 典</button>
+                <button class="tab-btn" data-tab="knowledge" role="tab" aria-selected="false">命理學堂</button>
+            </nav>
+        </header>
 
-    <!-- ======== 主容器 ======== -->
-    <div class="container">
+        <!-- ======== 主容器 ======== -->
+        <div class="container">
+            <!-- ====== 排盤頁籤 ====== -->
+            <div id="tabPaipan" class="tab-content active" role="tabpanel">
+                <!-- 輸入區塊 -->
+                <div class="card">
+                    <div class="card-title">輸入出生資料</div>
 
-        <!-- ====== 排盤頁籤 ====== -->
-        <div id="tabPaipan" class="tab-content active" role="tabpanel">
-
-            <!-- 輸入區塊 -->
-            <div class="card">
-                <div class="card-title">輸入出生資料</div>
-                
-                <!-- 曆法切換 -->
-                <div class="calendar-toggle" role="tablist">
-                    <button id="btnWestern" class="active" data-cal="western" role="tab" aria-selected="true">西元曆</button>
-                    <button id="btnRoc" data-cal="roc" role="tab" aria-selected="false">民國曆</button>
-                </div>
-
-                <form id="baziForm" autocomplete="off">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="birthYear">年份</label>
-                            <select id="birthYear" required>
-                                <!-- 由 JS 填充 -->
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="birthMonth">月份</label>
-                            <select id="birthMonth" required>
-                                <option value="">— 月 —</option>
-                                <option value="1">1 月</option>
-                                <option value="2">2 月</option>
-                                <option value="3">3 月</option>
-                                <option value="4">4 月</option>
-                                <option value="5">5 月</option>
-                                <option value="6">6 月</option>
-                                <option value="7">7 月</option>
-                                <option value="8">8 月</option>
-                                <option value="9">9 月</option>
-                                <option value="10">10 月</option>
-                                <option value="11">11 月</option>
-                                <option value="12">12 月</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="birthDay">日期</label>
-                            <select id="birthDay" required>
-                                <option value="">— 日 —</option>
-                                <!-- 由 JS 填充 -->
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="birthHour">時辰（選填）</label>
-                            <select id="birthHour">
-                                <option value="">— 不指定 —</option>
-                                <option value="23">子時 (23:00-00:59)</option>
-                                <option value="1">丑時 (01:00-02:59)</option>
-                                <option value="3">寅時 (03:00-04:59)</option>
-                                <option value="5">卯時 (05:00-06:59)</option>
-                                <option value="7">辰時 (07:00-08:59)</option>
-                                <option value="9">巳時 (09:00-10:59)</option>
-                                <option value="11">午時 (11:00-12:59)</option>
-                                <option value="13">未時 (13:00-14:59)</option>
-                                <option value="15">申時 (15:00-16:59)</option>
-                                <option value="17">酉時 (17:00-18:59)</option>
-                                <option value="19">戌時 (19:00-20:59)</option>
-                                <option value="21">亥時 (21:00-22:59)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="gender">性別（選填，用於大運）</label>
-                            <select id="gender">
-                                <option value="">— 不指定 —</option>
-                                <option value="male">男</option>
-                                <option value="female">女</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group full" style="display:flex; flex-direction:row; align-items:center; gap:10px; padding:8px 0;">
-                            <input type="checkbox" id="showAdvanced" style="width:18px;height:18px;accent-color:var(--primary);">
-                            <label for="showAdvanced" style="font-size:0.9rem;color:var(--text-muted);cursor:pointer;">顯示進階資訊（藏干、納音、十神表）</label>
-                        </div>
-
-                        <div class="form-group full" style="display:flex; flex-direction:row; align-items:center; gap:10px; padding:8px 0;">
-                            <input type="checkbox" id="lateZi" style="width:18px;height:18px;accent-color:var(--primary);">
-                            <label for="lateZi" style="font-size:0.9rem;color:var(--text-muted);cursor:pointer;">晚子時（23:00-23:59 計入次日）</label>
-                        </div>
-
-                        <p class="form-note" style="font-size:0.8rem;color:var(--text-muted);margin:4px 0 10px;line-height:1.6;">
-                            ※ 排盤採用近似節氣公式（±1-2 天），僅供參考娛樂；未含真太陽時與經度時差修正，正式命理請諮專業老師。
-                        </p>
-
-                        <button type="submit" class="btn-calculate">排 盤 算 命</button>
-                        <div class="form-actions" style="display:flex;gap:8px;margin-top:10px;">
-                            <button type="button" id="copyShare" class="btn-secondary">複製分享連結</button>
-                            <button type="button" id="printBtn" class="btn-secondary">列印命盤</button>
-                        </div>
+                    <!-- 曆法切換 -->
+                    <div class="calendar-toggle" role="tablist">
+                        <button id="btnWestern" class="active" data-cal="western" role="tab" aria-selected="true">
+                            西元曆
+                        </button>
+                        <button id="btnRoc" data-cal="roc" role="tab" aria-selected="false">民國曆</button>
                     </div>
-                </form>
-            </div>
+
+                    <form id="baziForm" autocomplete="off">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="birthYear">年份</label>
+                                <select id="birthYear" required>
+                                    <!-- 由 JS 填充 -->
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="birthMonth">月份</label>
+                                <select id="birthMonth" required>
+                                    <option value="">— 月 —</option>
+                                    <option value="1">1 月</option>
+                                    <option value="2">2 月</option>
+                                    <option value="3">3 月</option>
+                                    <option value="4">4 月</option>
+                                    <option value="5">5 月</option>
+                                    <option value="6">6 月</option>
+                                    <option value="7">7 月</option>
+                                    <option value="8">8 月</option>
+                                    <option value="9">9 月</option>
+                                    <option value="10">10 月</option>
+                                    <option value="11">11 月</option>
+                                    <option value="12">12 月</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="birthDay">日期</label>
+                                <select id="birthDay" required>
+                                    <option value="">— 日 —</option>
+                                    <!-- 由 JS 填充 -->
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="birthHour">時辰（選填）</label>
+                                <select id="birthHour">
+                                    <option value="">— 不指定 —</option>
+                                    <option value="23">子時 (23:00-00:59)</option>
+                                    <option value="1">丑時 (01:00-02:59)</option>
+                                    <option value="3">寅時 (03:00-04:59)</option>
+                                    <option value="5">卯時 (05:00-06:59)</option>
+                                    <option value="7">辰時 (07:00-08:59)</option>
+                                    <option value="9">巳時 (09:00-10:59)</option>
+                                    <option value="11">午時 (11:00-12:59)</option>
+                                    <option value="13">未時 (13:00-14:59)</option>
+                                    <option value="15">申時 (15:00-16:59)</option>
+                                    <option value="17">酉時 (17:00-18:59)</option>
+                                    <option value="19">戌時 (19:00-20:59)</option>
+                                    <option value="21">亥時 (21:00-22:59)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gender">性別（選填，用於大運）</label>
+                                <select id="gender">
+                                    <option value="">— 不指定 —</option>
+                                    <option value="male">男</option>
+                                    <option value="female">女</option>
+                                </select>
+                            </div>
+
+                            <div
+                                class="form-group full"
+                                style="
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    gap: 10px;
+                                    padding: 8px 0;
+                                "
+                            >
+                                <input
+                                    type="checkbox"
+                                    id="showAdvanced"
+                                    style="width: 18px; height: 18px; accent-color: var(--primary)"
+                                />
+                                <label
+                                    for="showAdvanced"
+                                    style="font-size: 0.9rem; color: var(--text-muted); cursor: pointer"
+                                    >顯示進階資訊（藏干、納音、十神表）</label
+                                >
+                            </div>
+
+                            <div
+                                class="form-group full"
+                                style="
+                                    display: flex;
+                                    flex-direction: row;
+                                    align-items: center;
+                                    gap: 10px;
+                                    padding: 8px 0;
+                                "
+                            >
+                                <input
+                                    type="checkbox"
+                                    id="lateZi"
+                                    style="width: 18px; height: 18px; accent-color: var(--primary)"
+                                />
+                                <label for="lateZi" style="font-size: 0.9rem; color: var(--text-muted); cursor: pointer"
+                                    >晚子時（23:00-23:59 計入次日）</label
+                                >
+                            </div>
+
+                            <p
+                                class="form-note"
+                                style="
+                                    font-size: 0.8rem;
+                                    color: var(--text-muted);
+                                    margin: 4px 0 10px;
+                                    line-height: 1.6;
+                                "
+                            >
+                                ※ 排盤採用近似節氣公式（±1-2
+                                天），僅供參考娛樂；未含真太陽時與經度時差修正，正式命理請諮專業老師。
+                            </p>
+
+                            <button type="submit" class="btn-calculate">排 盤 算 命</button>
+                            <div class="form-actions" style="display: flex; gap: 8px; margin-top: 10px">
+                                <button type="button" id="copyShare" class="btn-secondary">複製分享連結</button>
+                                <button type="button" id="printBtn" class="btn-secondary">列印命盤</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
 
                 <!-- 頁內錯誤條 -->
                 <div id="errorBanner" class="error-banner hidden" role="alert" aria-live="assertive"></div>
@@ -147,122 +197,128 @@
 
                 <!-- ======== 結果區塊 ======== -->
                 <div id="resultArea" class="hidden">
-                
-                <!-- 日主資訊 -->
-                <div class="card" id="dayMasterCard">
-                    <div class="card-title">日主</div>
-                    <div id="dayMasterContent"></div>
-                </div>
-
-                <!-- 八字四柱 -->
-                <div class="card" id="pillarsCard">
-                    <div class="card-title">四柱八字</div>
-                    <div id="pillarsContent"></div>
-                </div>
-
-                <!-- 五行強度 -->
-                <div class="card" id="elementCard">
-                    <div class="card-title">五行強度分析</div>
-                    <div id="elementContent"></div>
-                </div>
-
-                <!-- 喜用神 / 忌神 -->
-                <div class="card" id="favoriteCard">
-                    <div class="card-title">喜用神 · 忌神</div>
-                    <div id="favoriteContent"></div>
-                </div>
-
-                <!-- 進階資訊（藏干/納音/十神） -->
-                <div id="advancedArea" class="hidden">
-                    <div class="card" id="hiddenStemCard">
-                        <div class="card-title">地支藏干</div>
-                        <div id="hiddenStemContent"></div>
+                    <!-- 日主資訊 -->
+                    <div class="card" id="dayMasterCard">
+                        <div class="card-title">日主</div>
+                        <div id="dayMasterContent"></div>
                     </div>
 
-                    <div class="card" id="tenGodTableCard">
-                        <div class="card-title">十神總表</div>
-                        <div id="tenGodTableContent"></div>
+                    <!-- 八字四柱 -->
+                    <div class="card" id="pillarsCard">
+                        <div class="card-title">四柱八字</div>
+                        <div id="pillarsContent"></div>
                     </div>
-                </div>
 
-                <!-- 大運 -->
-                <div class="card" id="luckCard">
-                    <div class="card-title">大運</div>
-                    <div id="luckContent"></div>
-                </div>
+                    <!-- 五行強度 -->
+                    <div class="card" id="elementCard">
+                        <div class="card-title">五行強度分析</div>
+                        <div id="elementContent"></div>
+                    </div>
 
-                <!-- 綜合摘要 -->
-                <div class="card" id="summaryCard">
-                    <div class="card-title">綜合命理分析</div>
-                    <div id="summaryContent"></div>
-                </div>
-            </div>
-        </div>
+                    <!-- 喜用神 / 忌神 -->
+                    <div class="card" id="favoriteCard">
+                        <div class="card-title">喜用神 · 忌神</div>
+                        <div id="favoriteContent"></div>
+                    </div>
 
-        <!-- ====== 論命頁籤 ====== -->
-        <div id="tabLunming" class="tab-content" role="tabpanel">
-            <!-- 論命內容由 lunming.js 動態渲染 -->
-            <div id="lunmingRoot">
-                <div class="loading">經典載入中...</div>
-            </div>
-        </div>
+                    <!-- 進階資訊（藏干/納音/十神） -->
+                    <div id="advancedArea" class="hidden">
+                        <div class="card" id="hiddenStemCard">
+                            <div class="card-title">地支藏干</div>
+                            <div id="hiddenStemContent"></div>
+                        </div>
 
-        <!-- ====== 論命二頁籤（量化評分法） ====== -->
-        <div id="tabLunming2" class="tab-content" role="tabpanel">
-            <div id="lunming2Root">
-                <div class="loading">評分引擎載入中...</div>
-            </div>
-        </div>
+                        <div class="card" id="tenGodTableCard">
+                            <div class="card-title">十神總表</div>
+                            <div id="tenGodTableContent"></div>
+                        </div>
+                    </div>
 
-        <!-- ====== 流年頁籤（逐年影響分析） ====== -->
-        <div id="tabLiunian" class="tab-content" role="tabpanel">
-            <div id="liunianRoot">
-                <div class="card">
-                    <div class="card-title">流 年 分 析</div>
-                    <div style="text-align:center;padding:30px;color:var(--text-muted);">
-                        請先於「排盤」頁籤輸入出生資料並計算八字，再切換至此頁查看每一年流年對命主的影響。
+                    <!-- 大運 -->
+                    <div class="card" id="luckCard">
+                        <div class="card-title">大運</div>
+                        <div id="luckContent"></div>
+                    </div>
+
+                    <!-- 綜合摘要 -->
+                    <div class="card" id="summaryCard">
+                        <div class="card-title">綜合命理分析</div>
+                        <div id="summaryContent"></div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ====== 格局頁籤（格局判定） ====== -->
-        <div id="tabGeju" class="tab-content" role="tabpanel">
-            <div id="gejuRoot">
-                <div class="card">
-                    <div class="card-title">格 局 判 定</div>
-                    <div style="text-align:center;padding:30px;color:var(--text-muted);">
-                        請先於「排盤」頁籤輸入出生資料並計算八字，再切換至此頁查看格局分析。
+            <!-- ====== 論命頁籤 ====== -->
+            <div id="tabLunming" class="tab-content" role="tabpanel">
+                <!-- 論命內容由 lunming.js 動態渲染 -->
+                <div id="lunmingRoot">
+                    <div class="loading">經典載入中...</div>
+                </div>
+            </div>
+
+            <!-- ====== 論命二頁籤（量化評分法） ====== -->
+            <div id="tabLunming2" class="tab-content" role="tabpanel">
+                <div id="lunming2Root">
+                    <div class="loading">評分引擎載入中...</div>
+                </div>
+            </div>
+
+            <!-- ====== 流年頁籤（逐年影響分析） ====== -->
+            <div id="tabLiunian" class="tab-content" role="tabpanel">
+                <div id="liunianRoot">
+                    <div class="card">
+                        <div class="card-title">流 年 分 析</div>
+                        <div style="text-align: center; padding: 30px; color: var(--text-muted)">
+                            請先於「排盤」頁籤輸入出生資料並計算八字，再切換至此頁查看每一年流年對命主的影響。
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- ====== 格局頁籤（格局判定） ====== -->
+            <div id="tabGeju" class="tab-content" role="tabpanel">
+                <div id="gejuRoot">
+                    <div class="card">
+                        <div class="card-title">格 局 判 定</div>
+                        <div style="text-align: center; padding: 30px; color: var(--text-muted)">
+                            請先於「排盤」頁籤輸入出生資料並計算八字，再切換至此頁查看格局分析。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== 格局參考頁籤（格局百科） ====== -->
+            <div id="tabGejuRef" class="tab-content" role="tabpanel">
+                <div id="gejuRefRoot">
+                    <div class="loading">格局資料庫載入中...</div>
+                </div>
+            </div>
+
+            <!-- ====== 命理學堂（天干地支互動百科） ====== -->
+            <div id="tabKnowledge" class="tab-content" role="tabpanel">
+                <div id="knowledgeRoot">
+                    <div class="loading">命理學堂載入中...</div>
                 </div>
             </div>
         </div>
 
-        <!-- ====== 格局參考頁籤（格局百科） ====== -->
-        <div id="tabGejuRef" class="tab-content" role="tabpanel">
-            <div id="gejuRefRoot">
-                <div class="loading">格局資料庫載入中...</div>
-            </div>
-        </div>
-    </div>
+        <!-- 頁尾 -->
+        <footer class="footer">
+            <p>八字命理書 · 傳統文化研究與自我觀察工具 · 僅供參考娛樂</p>
+        </footer>
 
-    <!-- 頁尾 -->
-    <footer class="footer">
-        <p>八字命盤 · 子平淵海大全 · 僅供參考娛樂</p>
-    </footer>
+        <!-- 載入腳本 (ES Module) -->
+        <script type="module" src="js/app.js"></script>
 
-    <!-- 載入腳本 (ES Module) -->
-    <script type="module" src="js/app.js"></script>
-
-    <!-- 註冊 Service Worker（PWA 離線支援） -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch((err) => {
-                    console.warn('Service Worker 註冊失敗:', err);
+        <!-- 註冊 Service Worker（PWA 離線支援） -->
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('sw.js').catch(err => {
+                        console.warn('Service Worker 註冊失敗:', err);
+                    });
                 });
-            });
-        }
-    </script>
-</body>
+            }
+        </script>
+    </body>
 </html>

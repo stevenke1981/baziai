@@ -39,11 +39,11 @@ describe('liunian 流年分析', () => {
             { name: '日柱', branch: '丑' }
         ];
         const list = getBranchInteractions('子', pillars);
-        const types = list.map((x) => x.type);
+        const types = list.map(x => x.type);
         expect(types).toContain('clash');
         expect(types).toContain('combine');
-        expect(list.some((x) => x.label === '冲' && x.natalBranch === '午')).toBe(true);
-        expect(list.some((x) => x.label === '合' && x.natalBranch === '丑')).toBe(true);
+        expect(list.some(x => x.label === '沖' && x.natalBranch === '午')).toBe(true);
+        expect(list.some(x => x.label === '六合' && x.natalBranch === '丑')).toBe(true);
     });
 
     it('喜用神評估：喜 / 忌 / 中', () => {
@@ -55,9 +55,7 @@ describe('liunian 流年分析', () => {
 
     it('computeImpactLevel：喜用 + 吉神分數較高', () => {
         const good = computeImpactLevel('正財', '喜', []);
-        const bad = computeImpactLevel('劫財', '忌', [
-            { type: 'clash', label: '冲' }
-        ]);
+        const bad = computeImpactLevel('劫財', '忌', [{ type: 'clash', label: '冲' }]);
         expect(good.score).toBeGreaterThan(bad.score);
         expect(good.tone).toBe('good');
     });
@@ -73,6 +71,7 @@ describe('liunian 流年分析', () => {
         expect(row.godInfo.detail.length).toBeGreaterThan(10);
         expect(row.impact.level).toBeTruthy();
         expect(row.age).toBe(2024 - 1990);
+        expect(row.interactions.every(item => item.desc.length > 12)).toBe(true);
     });
 
     it('buildLiunianTable：範圍內每年一列', () => {

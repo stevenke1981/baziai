@@ -5,11 +5,22 @@ import { describe, it, expect } from 'vitest';
 
 // 引入被測試的函數
 import {
-    getYearPillar, getDayPillar, getMonthBranchIndex, getMonthPillar,
-    getHourPillar, getNayin, calculateElementStrength,
-    getFavoriteElement, calculateBazi, isValidDate,
-    STEMS, BRANCHES, ELEMENT_CYCLE, NAYIN,
-    STEM_ELEMENT, BRANCH_ELEMENT
+    getYearPillar,
+    getDayPillar,
+    getMonthBranchIndex,
+    getMonthPillar,
+    getHourPillar,
+    getNayin,
+    calculateElementStrength,
+    getFavoriteElement,
+    calculateBazi,
+    isValidDate,
+    STEMS,
+    BRANCHES,
+    ELEMENT_CYCLE,
+    NAYIN,
+    STEM_ELEMENT,
+    BRANCH_ELEMENT
 } from './bazi.js';
 
 import { getSexagenaryIndexFast } from './data.js';
@@ -165,10 +176,10 @@ describe('getSexagenaryIndexFast', () => {
 // ============================================================
 describe('calculateElementStrength', () => {
     const mockPillars = [
-        { stemIndex: 3, branchIndex: 2, stem: '丁', branch: '寅' },  // 年柱
-        { stemIndex: 5, branchIndex: 4, stem: '己', branch: '辰' },  // 月柱
-        { stemIndex: 3, branchIndex: 6, stem: '丁', branch: '午' },  // 日柱
-        { stemIndex: 1, branchIndex: 0, stem: '乙', branch: '子' }   // 時柱
+        { stemIndex: 3, branchIndex: 2, stem: '丁', branch: '寅' }, // 年柱
+        { stemIndex: 5, branchIndex: 4, stem: '己', branch: '辰' }, // 月柱
+        { stemIndex: 3, branchIndex: 6, stem: '丁', branch: '午' }, // 日柱
+        { stemIndex: 1, branchIndex: 0, stem: '乙', branch: '子' } // 時柱
     ];
 
     it('應回傳所有五行的加權分數', () => {
@@ -196,7 +207,7 @@ describe('getFavoriteElement', () => {
     it('身弱應喜生扶（印、比劫）', () => {
         // 極弱的水：全部 0
         const weakStrength = {
-            weighted: { '木': 1, '火': 1, '土': 10, '金': 1, '水': 1 }
+            weighted: { 木: 1, 火: 1, 土: 10, 金: 1, 水: 1 }
         };
         const result = getFavoriteElement(8, weakStrength); // 壬水
         expect(result.isWeak).toBe(true);
@@ -206,7 +217,7 @@ describe('getFavoriteElement', () => {
 
     it('身強應喜剋洩（官殺、財、食傷）', () => {
         const strongStrength = {
-            weighted: { '木': 10, '火': 1, '土': 1, '金': 1, '水': 1 }
+            weighted: { 木: 10, 火: 1, 土: 1, 金: 1, 水: 1 }
         };
         const result = getFavoriteElement(0, strongStrength); // 甲木
         expect(result.isStrong).toBe(true);
@@ -216,7 +227,7 @@ describe('getFavoriteElement', () => {
 
     it('中和應有適當喜用', () => {
         const balancedStrength = {
-            weighted: { '木': 5, '火': 5, '土': 5, '金': 5, '水': 5 }
+            weighted: { 木: 5, 火: 5, 土: 5, 金: 5, 水: 5 }
         };
         const result = getFavoriteElement(4, balancedStrength); // 戊土
         expect(result.isBalanced).toBe(true);
@@ -255,7 +266,23 @@ describe('calculateBazi', () => {
         expect(result.greatLuck).toBeDefined();
         if (result.greatLuck && !result.greatLuck.error) {
             expect(result.greatLuck.luckCycles.length).toBe(8);
+            expect(result.greatLuck.luckCycles[0].ganZhi).toMatch(/^[甲乙丙丁戊己庚辛壬癸][子丑寅卯辰巳午未申酉戌亥]$/);
+            expect(result.greatLuck.luckCycles[0].tenGod).toBeTruthy();
+            expect(result.greatLuck.luckCycles[0].analysis.length).toBeGreaterThan(20);
         }
+    });
+
+    it('大運應由月柱依順逆逐柱排列，而非固定十神輪播', () => {
+        const male = calculateBazi(2024, 2, 10, 12, 'male');
+        const female = calculateBazi(2024, 2, 10, 12, 'female');
+        const month = male.pillars.find(p => p.name === '月柱');
+        const forward = male.greatLuck.isForward ? male : female;
+        const backward = male.greatLuck.isForward ? female : male;
+
+        expect(forward.greatLuck.luckCycles[0].stemIndex).toBe((month.stemIndex + 1) % 10);
+        expect(forward.greatLuck.luckCycles[0].branchIndex).toBe((month.branchIndex + 1) % 12);
+        expect(backward.greatLuck.luckCycles[0].stemIndex).toBe((month.stemIndex + 9) % 10);
+        expect(backward.greatLuck.luckCycles[0].branchIndex).toBe((month.branchIndex + 11) % 12);
     });
 });
 

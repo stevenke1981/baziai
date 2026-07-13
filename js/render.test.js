@@ -9,7 +9,11 @@ const bodyMatch = html.match(/<body>([\s\S]*?)<\/body>/);
 const bodyHtml = (bodyMatch ? bodyMatch[1] : '').replace(/<script[\s\S]*?<\/script>/g, '');
 
 beforeEach(() => {
-    try { localStorage.clear(); } catch (e) { /* ignore */ }
+    try {
+        localStorage.clear();
+    } catch (e) {
+        /* ignore */
+    }
 });
 
 async function bootApp() {
@@ -52,7 +56,7 @@ describe('app.js 模組載入與排盤渲染', () => {
         form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 
         // handleSubmit 內部使用 setTimeout(100) 進行計算
-        await new Promise((r) => setTimeout(r, 250));
+        await new Promise(r => setTimeout(r, 250));
 
         const pillars = document.getElementById('pillarsContent').textContent || '';
         // 四柱八字至少應含天干地支字元
@@ -76,7 +80,7 @@ describe('app.js 模組載入與排盤渲染', () => {
         const form = document.getElementById('baziForm');
         form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 
-        await new Promise((r) => setTimeout(r, 50));
+        await new Promise(r => setTimeout(r, 50));
 
         const banner = document.getElementById('errorBanner');
         expect(banner.classList.contains('hidden')).toBe(false);
@@ -86,10 +90,19 @@ describe('app.js 模組載入與排盤渲染', () => {
     });
 
     it('F4 localStorage 還原：寫入後重啟 app 自動還原輸入並重算', async () => {
-        localStorage.setItem('baziai:last-input', JSON.stringify({
-            year: 2024, month: 2, day: 10, hour: 15, gender: 'male',
-            calendar: 'western', advanced: false, lateZi: false
-        }));
+        localStorage.setItem(
+            'baziai:last-input',
+            JSON.stringify({
+                year: 2024,
+                month: 2,
+                day: 10,
+                hour: 15,
+                gender: 'male',
+                calendar: 'western',
+                advanced: false,
+                lateZi: false
+            })
+        );
         await bootApp();
 
         expect(document.getElementById('birthYear').value).toBe('2024');
@@ -97,7 +110,7 @@ describe('app.js 模組載入與排盤渲染', () => {
         expect(document.getElementById('birthDay').value).toBe('10');
 
         // init 自動重算
-        await new Promise((r) => setTimeout(r, 250));
+        await new Promise(r => setTimeout(r, 250));
         expect(document.getElementById('pillarsContent').textContent).toMatch(/[甲乙丙丁戊己庚辛壬癸]/);
     });
 
@@ -111,11 +124,12 @@ describe('app.js 模組載入與排盤渲染', () => {
 
         const clip = vi.fn().mockResolvedValue(undefined);
         Object.defineProperty(navigator, 'clipboard', {
-            value: { writeText: clip }, configurable: true
+            value: { writeText: clip },
+            configurable: true
         });
 
         document.getElementById('copyShare').dispatchEvent(new Event('click', { bubbles: true }));
-        await new Promise((r) => setTimeout(r, 20));
+        await new Promise(r => setTimeout(r, 20));
 
         expect(clip).toHaveBeenCalled();
         const url = clip.mock.calls[0][0];
@@ -137,7 +151,7 @@ describe('app.js 模組載入與排盤渲染', () => {
         const form = document.getElementById('baziForm');
         form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 
-        await new Promise((r) => setTimeout(r, 50));
+        await new Promise(r => setTimeout(r, 50));
 
         const banner = document.getElementById('errorBanner');
         expect(banner.classList.contains('hidden')).toBe(false);
@@ -180,14 +194,14 @@ describe('app.js 模組載入與排盤渲染', () => {
 
         const form = document.getElementById('baziForm');
         form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-        await new Promise((r) => setTimeout(r, 250));
+        await new Promise(r => setTimeout(r, 250));
         const westernPillars = document.getElementById('pillarsContent').textContent || '';
 
         // 切民國再排同一西元年
         document.getElementById('btnRoc').dispatchEvent(new Event('click', { bubbles: true }));
         expect(document.getElementById('birthYear').value).toBe('1990');
         form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-        await new Promise((r) => setTimeout(r, 250));
+        await new Promise(r => setTimeout(r, 250));
         const rocPillars = document.getElementById('pillarsContent').textContent || '';
 
         expect(rocPillars).toBe(westernPillars);
@@ -195,10 +209,19 @@ describe('app.js 模組載入與排盤渲染', () => {
     });
 
     it('F4 localStorage 民國曆還原：保留西元年份且顯示民國標籤', async () => {
-        localStorage.setItem('baziai:last-input', JSON.stringify({
-            year: 1988, month: 8, day: 8, hour: 10, gender: 'female',
-            calendar: 'roc', advanced: false, lateZi: false
-        }));
+        localStorage.setItem(
+            'baziai:last-input',
+            JSON.stringify({
+                year: 1988,
+                month: 8,
+                day: 8,
+                hour: 10,
+                gender: 'female',
+                calendar: 'roc',
+                advanced: false,
+                lateZi: false
+            })
+        );
         await bootApp();
 
         expect(document.getElementById('birthYear').value).toBe('1988');
@@ -216,7 +239,7 @@ describe('app.js 模組載入與排盤渲染', () => {
         document.getElementById('birthHour').value = '12';
         document.getElementById('gender').value = 'male';
         document.getElementById('baziForm').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-        await new Promise((r) => setTimeout(r, 250));
+        await new Promise(r => setTimeout(r, 250));
 
         const tabBtn = document.querySelector('.tab-btn[data-tab="liunian"]');
         expect(tabBtn).toBeTruthy();
@@ -229,5 +252,18 @@ describe('app.js 模組載入與排盤渲染', () => {
         // 含十神或干支字樣
         expect(root.textContent).toMatch(/十神|甲|乙|丙|丁/);
         expect(document.getElementById('tabLiunian').classList.contains('active')).toBe(true);
+    });
+
+    it('命理學堂頁：可查看生剋、五合、刑沖合害破與歲運判讀', async () => {
+        await bootApp();
+        document.querySelector('.tab-btn[data-tab="knowledge"]').click();
+        const root = document.getElementById('knowledgeRoot');
+        expect(document.getElementById('tabKnowledge').classList.contains('active')).toBe(true);
+        expect(root.textContent).toMatch(/五行生剋/);
+        expect(root.textContent).toMatch(/甲己合土/);
+        expect(root.textContent).toMatch(/六沖/);
+        expect(root.textContent).toMatch(/六害/);
+        expect(root.textContent).toMatch(/六破/);
+        expect(root.querySelectorAll('.kb-rule-card').length).toBeGreaterThan(10);
     });
 });

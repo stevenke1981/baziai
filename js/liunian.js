@@ -14,6 +14,7 @@ import {
     ELEMENT_COLOR_VALUES
 } from './data.js';
 import { getTenGod, getNayin } from './bazi.js';
+import { analyzeGanZhiInteractions, getBranchInteractions as getSharedBranchInteractions } from './interactions.js';
 
 // ============================================================
 // 十神流年說明
@@ -21,115 +22,120 @@ import { getTenGod, getNayin } from './bazi.js';
 
 /** 十神 → 流年影響說明 */
 export const TEN_GOD_LIUNIAN = {
-    '比肩': {
+    比肩: {
         level: '中',
         tone: 'neutral',
         summary: '比肩年：競爭與自立並存',
-        detail:
-            '流年天干與日主同性同氣，易遇同輩競爭、合夥或手足事務。利於自立開創，亦須防資源被分、意見不合。人際上宜明定界線、量力而為。'
+        detail: '流年天干與日主同性同氣，易遇同輩競爭、合夥或手足事務。利於自立開創，亦須防資源被分、意見不合。人際上宜明定界線、量力而為。'
     },
-    '劫財': {
+    劫財: {
         level: '慎',
         tone: 'caution',
         summary: '劫財年：破耗與爭奪較明顯',
-        detail:
-            '流年與日主異性同氣，財氣易被分、消費衝動或突發支出較多。亦利於爭取機會、拓展人脈，但須謹慎借貸、合夥與投機。感情上易有爭風吃醋。'
+        detail: '流年與日主異性同氣，財氣易被分、消費衝動或突發支出較多。亦利於爭取機會、拓展人脈，但須謹慎借貸、合夥與投機。感情上易有爭風吃醋。'
     },
-    '食神': {
+    食神: {
         level: '吉',
         tone: 'good',
         summary: '食神年：才藝發揮、生活較從容',
-        detail:
-            '流年洩秀有情，利於學習、創作、口才與飲食享受。思緒較開朗，適合展現專業與品味。注意勿過於安逸或口腹之欲過甚而影響健康。'
+        detail: '流年洩秀有情，利於學習、創作、口才與飲食享受。思緒較開朗，適合展現專業與品味。注意勿過於安逸或口腹之欲過甚而影響健康。'
     },
-    '傷官': {
+    傷官: {
         level: '慎',
         tone: 'caution',
         summary: '傷官年：創意強、口舌與叛逆亦強',
-        detail:
-            '流年才華外露、求新求變，利於技術突破與表達，但易言語傷人、頂撞權威或官司是非。宜低調務實，少公開批評，避免衝動決策。'
+        detail: '流年才華外露、求新求變，利於技術突破與表達，但易言語傷人、頂撞權威或官司是非。宜低調務實，少公開批評，避免衝動決策。'
     },
-    '正財': {
+    正財: {
         level: '吉',
         tone: 'good',
         summary: '正財年：穩定進財、務實經營',
-        detail:
-            '流年主正當收入、勤奮得財，利於正職加薪、穩健投資與置產規劃。感情上已婚者較顧家。忌過度吝嗇或為小利失大義。'
+        detail: '流年主正當收入、勤奮得財，利於正職加薪、穩健投資與置產規劃。感情上已婚者較顧家。忌過度吝嗇或為小利失大義。'
     },
-    '偏財': {
+    偏財: {
         level: '吉',
         tone: 'good',
         summary: '偏財年：橫財機會與人緣財',
-        detail:
-            '流年主流動之財、商業機會與交際應酬，利於業務、投資與貴人牽線。但財來財去快，宜控風險、勿貪高報酬承諾。感情上桃花較旺。'
+        detail: '流年主流動之財、商業機會與交際應酬，利於業務、投資與貴人牽線。但財來財去快，宜控風險、勿貪高報酬承諾。感情上桃花較旺。'
     },
-    '正官': {
+    正官: {
         level: '吉',
         tone: 'good',
         summary: '正官年：責任、名位與規範',
-        detail:
-            '流年主升遷考核、職位責任與社會名聲，利於考試、公職與制度內發展。行事須守規矩，忌違法與背信。壓力感可能上升，宜規律作息。'
+        detail: '流年主升遷考核、職位責任與社會名聲，利於考試、公職與制度內發展。行事須守規矩，忌違法與背信。壓力感可能上升，宜規律作息。'
     },
-    '七殺': {
+    七殺: {
         level: '慎',
         tone: 'caution',
         summary: '七殺年：壓力挑戰與突破並存',
-        detail:
-            '流年主競爭、壓迫與非常之事，利於突破困境、軍警醫護或創業衝刺，但身心負荷較大。宜化壓力為動力，避免硬碰硬與無謂爭執。'
+        detail: '流年主競爭、壓迫與非常之事，利於突破困境、軍警醫護或創業衝刺，但身心負荷較大。宜化壓力為動力，避免硬碰硬與無謂爭執。'
     },
-    '正印': {
+    正印: {
         level: '吉',
         tone: 'good',
         summary: '正印年：貴人學習與守護',
-        detail:
-            '流年主學業進修、文書證書與長輩貴人提攜，利於進修、考照與療養。身心較得滋養，亦須防懶散依賴、思慮過多而延誤行動。'
+        detail: '流年主學業進修、文書證書與長輩貴人提攜，利於進修、考照與療養。身心較得滋養，亦須防懶散依賴、思慮過多而延誤行動。'
     },
-    '偏印': {
+    偏印: {
         level: '中',
         tone: 'neutral',
         summary: '偏印年：偏門智慧與孤獨感',
-        detail:
-            '流年利於研究、術數、技術鑽研與另類思維，靈感多但情緒易孤僻。適合深造與幕後工作，忌多疑、自我封閉或旁門左道誘惑。'
+        detail: '流年利於研究、術數、技術鑽研與另類思維，靈感多但情緒易孤僻。適合深造與幕後工作，忌多疑、自我封閉或旁門左道誘惑。'
     }
 };
 
-// 地支六冲對
-const CLASH_PAIRS = {
-    子: '午', 午: '子',
-    丑: '未', 未: '丑',
-    寅: '申', 申: '寅',
-    卯: '酉', 酉: '卯',
-    辰: '戌', 戌: '辰',
-    巳: '亥', 亥: '巳'
+const TEN_GOD_FOCUS = {
+    比肩: [
+        '職涯：適合獨立承擔、建立個人品牌；合作先分清權責。',
+        '財務：同儕競爭增加，避免人情支出與重複投資。',
+        '關係：尊重彼此自主，少用輸贏心處理親密議題。'
+    ],
+    劫財: [
+        '職涯：搶機會要快，但合夥條款與分潤務必白紙黑字。',
+        '財務：保留緊急預備金，借貸、擔保與高槓桿宜審慎。',
+        '關係：社交活躍，注意第三方意見與比較心干擾。'
+    ],
+    食神: [
+        '職涯：利作品輸出、教學、提案與長期能力變現。',
+        '財務：可從專業與興趣開源，避免過度享樂侵蝕結餘。',
+        '關係：溝通柔和，適合安排共同體驗與修復氣氛。'
+    ],
+    傷官: [
+        '職涯：改革與表達力強，挑戰制度前先準備替代方案。',
+        '財務：創新收入有機會，但稅務、合約與法規不能省略。',
+        '關係：直言易傷人，先確認對方需要建議還是傾聽。'
+    ],
+    正財: [
+        '職涯：重流程、績效與穩定交付，累積可信任的成果。',
+        '財務：適合預算、儲蓄與穩健配置，勿因短利犧牲品質。',
+        '關係：以實際承諾表達在乎，也要保留情感交流。'
+    ],
+    偏財: [
+        '職涯：利業務、跨界與資源媒合，機會多時更要篩選。',
+        '財務：現金流速度快，先訂停利停損與單筆風險上限。',
+        '關係：人緣提升，清楚界定曖昧、應酬與承諾。'
+    ],
+    正官: [
+        '職涯：考核、升遷與制度責任突出，守規範可累積名望。',
+        '財務：收入重穩定，契約、保險與法遵宜完整。',
+        '關係：重承諾也易嚴肅，避免把工作標準套在家人身上。'
+    ],
+    七殺: [
+        '職涯：高壓任務可帶來突破，先設優先序與退出條件。',
+        '財務：不為證明能力而冒險，重大決策至少留一晚覆核。',
+        '關係：壓力可能轉成控制感，用具體需求取代命令。'
+    ],
+    正印: [
+        '職涯：利進修、證照、研究與獲得前輩支持。',
+        '財務：投資自己可行，但要把學習轉為可驗收成果。',
+        '關係：易獲照顧，也要主動承擔而非過度依賴。'
+    ],
+    偏印: [
+        '職涯：利深度研究、技術與非典型解法，避免閉門造車。',
+        '財務：冷門機會需以資料驗證，不只憑直覺。',
+        '關係：需要獨處時說明界線，勿用沉默代替溝通。'
+    ]
 };
-
-// 地支六合對
-const COMBINE_PAIRS = {
-    子: '丑', 丑: '子',
-    寅: '亥', 亥: '寅',
-    卯: '戌', 戌: '卯',
-    辰: '酉', 酉: '辰',
-    巳: '申', 申: '巳',
-    午: '未', 未: '午'
-};
-
-// 地支六害對
-const HARM_PAIRS = {
-    子: '未', 未: '子',
-    丑: '午', 午: '丑',
-    寅: '巳', 巳: '寅',
-    卯: '辰', 辰: '卯',
-    申: '亥', 亥: '申',
-    酉: '戌', 戌: '酉'
-};
-
-// 三刑組
-const PUNISH_GROUPS = [
-    ['寅', '巳', '申'],
-    ['丑', '戌', '未']
-];
-const PUNISH_ZI_MAO = new Set(['子', '卯']);
-const SELF_PUNISH = new Set(['辰', '午', '酉', '亥']);
 
 // ============================================================
 // 核心計算
@@ -168,84 +174,7 @@ export function getLiunianGanZhi(year) {
  * @returns {Array<{ type: string, label: string, withPillar: string, natalBranch: string, desc: string }>}
  */
 export function getBranchInteractions(annualBranch, natalPillars) {
-    const interactions = [];
-    if (!annualBranch || !Array.isArray(natalPillars)) return interactions;
-
-    for (const p of natalPillars) {
-        const nb = p.branch;
-        if (!nb) continue;
-        const pillarName = p.name || '命盤';
-
-        if (CLASH_PAIRS[annualBranch] === nb) {
-            interactions.push({
-                type: 'clash',
-                label: '冲',
-                withPillar: pillarName,
-                natalBranch: nb,
-                desc: `流年${annualBranch}冲${pillarName}${nb}：變動、衝擊、遷移或突發事件機率升高`
-            });
-        }
-        if (COMBINE_PAIRS[annualBranch] === nb) {
-            interactions.push({
-                type: 'combine',
-                label: '合',
-                withPillar: pillarName,
-                natalBranch: nb,
-                desc: `流年${annualBranch}合${pillarName}${nb}：牽絆、合作、感情或合約機緣`
-            });
-        }
-        if (HARM_PAIRS[annualBranch] === nb) {
-            interactions.push({
-                type: 'harm',
-                label: '害',
-                withPillar: pillarName,
-                natalBranch: nb,
-                desc: `流年${annualBranch}害${pillarName}${nb}：暗損、小人或身心不適之隱憂`
-            });
-        }
-
-        // 子卯刑
-        if (PUNISH_ZI_MAO.has(annualBranch) && PUNISH_ZI_MAO.has(nb) && annualBranch !== nb) {
-            interactions.push({
-                type: 'punish',
-                label: '刑',
-                withPillar: pillarName,
-                natalBranch: nb,
-                desc: `流年${annualBranch}與${pillarName}${nb}相刑：無禮之刑，口舌是非、情緒衝突`
-            });
-        }
-        // 自刑
-        if (SELF_PUNISH.has(annualBranch) && annualBranch === nb) {
-            interactions.push({
-                type: 'punish',
-                label: '自刑',
-                withPillar: pillarName,
-                natalBranch: nb,
-                desc: `流年${annualBranch}與${pillarName}自刑：鑽牛角尖、自我消耗`
-            });
-        }
-        // 三刑（流年與命盤任一支組成三刑之二）
-        for (const group of PUNISH_GROUPS) {
-            if (group.includes(annualBranch) && group.includes(nb) && annualBranch !== nb) {
-                interactions.push({
-                    type: 'punish',
-                    label: '刑',
-                    withPillar: pillarName,
-                    natalBranch: nb,
-                    desc: `流年${annualBranch}與${pillarName}${nb}屬三刑：壓力、官司或健康折磨感`
-                });
-            }
-        }
-    }
-
-    // 去重（同 pillar+type+natalBranch）
-    const seen = new Set();
-    return interactions.filter((it) => {
-        const key = `${it.type}|${it.withPillar}|${it.natalBranch}|${it.label}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-    });
+    return getSharedBranchInteractions(annualBranch, natalPillars, '流年');
 }
 
 /**
@@ -284,9 +213,9 @@ export function computeImpactLevel(tenGod, favor, interactions) {
     if (favor === '喜') score += 15;
     if (favor === '忌') score -= 15;
 
-    const hasClash = interactions.some((i) => i.type === 'clash' || i.type === 'punish');
-    const hasHarm = interactions.some((i) => i.type === 'harm');
-    const hasCombine = interactions.some((i) => i.type === 'combine');
+    const hasClash = interactions.some(i => i.type === 'clash' || i.type === 'punish');
+    const hasHarm = interactions.some(i => i.type === 'harm' || i.type === 'break');
+    const hasCombine = interactions.some(i => ['combine', 'three-harmony', 'three-meeting'].includes(i.type));
     if (hasClash) score -= 12;
     if (hasHarm) score -= 8;
     if (hasCombine) score += 6;
@@ -338,7 +267,7 @@ export function analyzeLiunianYear(baziResult, year) {
         summary: `${tenGod || '未知'}年`,
         detail: '資料不足，暫無詳細說明。'
     };
-    const interactions = getBranchInteractions(gz.branch, baziResult.pillars || []);
+    const interactions = analyzeGanZhiInteractions(gz.stem, gz.branch, baziResult.pillars || [], '流年');
     const favorInfo = assessElementFavor(gz.element, baziResult.favoriteElement);
     const impact = computeImpactLevel(tenGod, favorInfo.favor, interactions);
     const age = year - baziResult.input.year;
@@ -347,7 +276,7 @@ export function analyzeLiunianYear(baziResult, year) {
     let luckPeriod = null;
     const cycles = baziResult.greatLuck?.luckCycles || baziResult.greatLuck?.cycles;
     if (Array.isArray(cycles) && age >= 0) {
-        luckPeriod = cycles.find((c) => age >= c.ageStart && age <= c.ageEnd) || null;
+        luckPeriod = cycles.find(c => age >= c.ageStart && age <= c.ageEnd) || null;
     }
 
     return {
@@ -448,7 +377,7 @@ export function renderLiunian(baziResult, container) {
             以日主
             <strong class="${elClass(dm.element)}" style="color:${elColor(dm.element)}">${escapeHtml(dm.stem)}${escapeHtml(dm.branch)}</strong>
             （${escapeHtml(dm.element)}）為中心，逐一檢視每一年流年干支的
-            <strong>十神</strong>、<strong>喜忌</strong>與<strong>地支刑冲合害</strong>，
+            <strong>十神</strong>、<strong>喜忌</strong>與<strong>天干地支生剋、刑沖合害破</strong>，
             說明該年對命主大致傾向。範圍：${startYear}–${endYear}（出生起約至 ${endYear - birthYear} 歲）。
         </p>
         <p class="ln-disclaimer">※ 流年以立春為年界之近似干支；未含真太陽時與細盤，僅供參考娛樂。</p>
@@ -472,11 +401,11 @@ export function renderLiunian(baziResult, container) {
                         <th>十神</th>
                         <th>喜忌</th>
                         <th>影響</th>
-                        <th>刑冲合害</th>
+                        <th>干支互動</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${table.map((row) => renderTableRow(row, currentYear)).join('')}
+                    ${table.map(row => renderTableRow(row, currentYear)).join('')}
                 </tbody>
             </table>
         </div>
@@ -492,13 +421,17 @@ export function renderLiunian(baziResult, container) {
     html += `<div class="card">
         <div class="card-title">十神流年速查</div>
         <div class="ln-god-grid">
-            ${Object.entries(TEN_GOD_LIUNIAN).map(([name, info]) => `
+            ${Object.entries(TEN_GOD_LIUNIAN)
+                .map(
+                    ([name, info]) => `
                 <div class="ln-god-card ${toneClass(info.tone)}">
                     <div class="ln-god-name">${escapeHtml(name)}</div>
                     <div class="ln-god-sum">${escapeHtml(info.summary)}</div>
                     <div class="ln-god-detail">${escapeHtml(info.detail)}</div>
                 </div>
-            `).join('')}
+            `
+                )
+                .join('')}
         </div>
     </div>`;
 
@@ -508,13 +441,13 @@ export function renderLiunian(baziResult, container) {
     const tbody = root.querySelector('#lnTable tbody');
     const detailBody = root.querySelector('#lnDetailBody');
     if (tbody && detailBody) {
-        tbody.addEventListener('click', (e) => {
+        tbody.addEventListener('click', e => {
             const tr = e.target.closest('tr[data-year]');
             if (!tr) return;
             const y = parseInt(tr.dataset.year, 10);
             const row = analyzeLiunianYear(baziResult, y);
             if (!row) return;
-            tbody.querySelectorAll('tr').forEach((r) => r.classList.remove('ln-row-active'));
+            tbody.querySelectorAll('tr').forEach(r => r.classList.remove('ln-row-active'));
             tr.classList.add('ln-row-active');
             detailBody.innerHTML = renderYearDetailBody(row);
             detailBody.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -534,7 +467,7 @@ export function renderLiunian(baziResult, container) {
 
 function renderTableRow(row, currentYear) {
     const isCurrent = row.year === currentYear;
-    const tags = row.interactions.map((i) => i.label).join('、') || '—';
+    const tags = row.interactions.map(i => i.label).join('、') || '—';
     return `<tr data-year="${row.year}" class="${isCurrent ? 'ln-row-current' : ''}">
         <td>${row.year}${isCurrent ? ' <span class="ln-badge-now">今</span>' : ''}</td>
         <td>${row.age != null ? row.age : '—'}</td>
@@ -560,15 +493,19 @@ function renderYearDetailBody(row) {
         return '<p style="color:var(--text-muted);">無資料</p>';
     }
     const interHtml = row.interactions.length
-        ? `<ul class="ln-inter-list">${row.interactions.map((i) =>
-            `<li><span class="ln-inter-label ln-inter-${i.type}">${escapeHtml(i.label)}</span> ${escapeHtml(i.desc)}</li>`
-        ).join('')}</ul>`
-        : '<p class="ln-muted">本年流年地支與四柱無明顯刑冲合害。</p>';
+        ? `<ul class="ln-inter-list">${row.interactions
+              .map(
+                  i =>
+                      `<li><span class="ln-inter-label ln-inter-${i.type}">${escapeHtml(i.label)}</span> ${escapeHtml(i.desc)}</li>`
+              )
+              .join('')}</ul>`
+        : '<p class="ln-muted">本年干支與四柱未形成明顯合沖刑害破；仍須看五行旺衰與大運背景。</p>';
 
     const luckHtml = row.luckPeriod
-        ? `<p>大運：<strong>${escapeHtml(row.luckPeriod.name || row.luckPeriod.years || '—')}</strong>
-            （${row.luckPeriod.ageStart}–${row.luckPeriod.ageEnd} 歲）</p>`
+        ? `<div class="ln-luck-context"><span>所處大運</span><strong>${escapeHtml(row.luckPeriod.ganZhi || row.luckPeriod.name || '—')} · ${escapeHtml(row.luckPeriod.tenGod || row.luckPeriod.name || '')}</strong>
+            <small>${row.luckPeriod.ageStart}–${row.luckPeriod.ageEnd} 歲｜${escapeHtml(row.luckPeriod.analysis || '以大運為十年背景，再看本年觸發。')}</small></div>`
         : '';
+    const focusItems = TEN_GOD_FOCUS[row.tenGod] || ['把握可控事項，重大決策以資料與專業意見覆核。'];
 
     return `
         <div class="ln-detail">
@@ -589,9 +526,11 @@ function renderYearDetailBody(row) {
             <p class="ln-detail-text">${escapeHtml(row.godInfo.detail)}</p>
             <p class="ln-favor-note">${escapeHtml(row.favorNote)}</p>
             ${luckHtml}
-            <h4 class="ln-section-title">地支互動</h4>
+            <h4 class="ln-section-title">年度行動重點</h4>
+            <div class="ln-focus-grid">${focusItems.map(item => `<p>${escapeHtml(item)}</p>`).join('')}</div>
+            <h4 class="ln-section-title">天干地支互動</h4>
             ${interHtml}
-            <p class="ln-score-line">綜合傾向分數：<strong>${row.impact.score}</strong> / 100（演算法參考值，非絕對吉凶）</p>
+            <p class="ln-score-line">綜合傾向分數：<strong>${row.impact.score}</strong> / 100（用於排序提醒，不是事件預測或絕對吉凶）</p>
         </div>`;
 }
 

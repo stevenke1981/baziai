@@ -2,7 +2,7 @@
  * sw.js — 八字命盤 Service Worker
  * cache-first 靜態資源；導航請求 network-first 回退首頁（離線可開啟）
  */
-const CACHE = 'baziai-v3';
+const CACHE = 'baziai-v4';
 const ASSETS = [
     '/',
     '/index.html',
@@ -16,6 +16,8 @@ const ASSETS = [
     '/js/lunming.js',
     '/js/lunming2.js',
     '/js/liunian.js',
+    '/js/interactions.js',
+    '/js/knowledge.js',
     '/js/geju.js',
     '/js/geju-ref.js',
     '/js/data.js',
@@ -28,25 +30,25 @@ const ASSETS = [
     '/icon-maskable-512.png'
 ];
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(CACHE)
-            .then((cache) => cache.addAll(ASSETS))
+        caches
+            .open(CACHE)
+            .then(cache => cache.addAll(ASSETS))
             .then(() => self.skipWaiting())
     );
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
     event.waitUntil(
-        caches.keys()
-            .then((keys) => Promise.all(
-                keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))
-            ))
+        caches
+            .keys()
+            .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
             .then(() => self.clients.claim())
     );
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
     const req = event.request;
     if (req.method !== 'GET') return;
     const url = new URL(req.url);
@@ -54,23 +56,23 @@ self.addEventListener('fetch', (event) => {
 
     // 導航（頁面）請求：network-first，離線回退快取首頁
     if (req.mode === 'navigate') {
-        event.respondWith(
-            fetch(req).catch(() => caches.match('/index.html'))
-        );
+        event.respondWith(fetch(req).catch(() => caches.match('/index.html')));
         return;
     }
 
     // 其餘靜態資源：cache-first，並在取得後回填快取
     event.respondWith(
-        caches.match(req).then((cached) => {
+        caches.match(req).then(cached => {
             if (cached) return cached;
-            return fetch(req).then((res) => {
-                if (res && res.status === 200 && res.type === 'basic') {
-                    const copy = res.clone();
-                    caches.open(CACHE).then((cache) => cache.put(req, copy));
-                }
-                return res;
-            }).catch(() => cached);
+            return fetch(req)
+                .then(res => {
+                    if (res && res.status === 200 && res.type === 'basic') {
+                        const copy = res.clone();
+                        caches.open(CACHE).then(cache => cache.put(req, copy));
+                    }
+                    return res;
+                })
+                .catch(() => cached);
         })
     );
 });

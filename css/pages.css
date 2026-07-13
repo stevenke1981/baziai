@@ -5,7 +5,7 @@
 /* 論命分析卡片 */
 .lm-analysis-card {
     border-color: var(--secondary) !important;
-    background: linear-gradient(135deg, rgba(184,134,11,0.08), rgba(139,0,0,0.05)) !important;
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.08), rgba(139, 0, 0, 0.05)) !important;
 }
 
 .lm-analysis-grid {
@@ -95,7 +95,7 @@
 
 .lm-stem-block.lm-active {
     border-left-color: var(--secondary-light);
-    background: linear-gradient(90deg, rgba(184,134,11,0.05), var(--bg));
+    background: linear-gradient(90deg, rgba(184, 134, 11, 0.05), var(--bg));
 }
 
 .lm-stem-title {
@@ -132,7 +132,7 @@
 
 .lm-subsection.lm-active {
     border-left-color: var(--secondary-light);
-    background: linear-gradient(90deg, rgba(184,134,11,0.05), var(--bg));
+    background: linear-gradient(90deg, rgba(184, 134, 11, 0.05), var(--bg));
 }
 
 .lm-subsection-title {
@@ -154,8 +154,13 @@
 }
 
 @keyframes lmPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(218,165,32,0); }
-    50% { box-shadow: 0 0 15px 2px rgba(218,165,32,0.3); }
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(218, 165, 32, 0);
+    }
+    50% {
+        box-shadow: 0 0 15px 2px rgba(218, 165, 32, 0.3);
+    }
 }
 
 /* 響應式 */
@@ -171,7 +176,7 @@
 
 /* 總覽區 */
 .lm2-overview {
-    background: linear-gradient(135deg, rgba(139,0,0,0.12), rgba(184,134,11,0.08));
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.12), rgba(184, 134, 11, 0.08));
     border: 1px solid var(--secondary);
     border-radius: var(--radius);
     padding: 24px;
@@ -201,14 +206,14 @@
 
 .lm2-strong {
     color: var(--fire);
-    background: rgba(211,47,47,0.15);
-    border: 1px solid rgba(211,47,47,0.3);
+    background: rgba(211, 47, 47, 0.15);
+    border: 1px solid rgba(211, 47, 47, 0.3);
 }
 
 .lm2-weak {
     color: var(--water);
-    background: rgba(21,101,192,0.15);
-    border: 1px solid rgba(21,101,192,0.3);
+    background: rgba(21, 101, 192, 0.15);
+    border: 1px solid rgba(21, 101, 192, 0.3);
 }
 
 .lm2-total-score {
@@ -262,10 +267,18 @@
     font-weight: 700;
 }
 
-.lm2-score-very-high { color: var(--fire); }
-.lm2-score-high       { color: var(--secondary-light); }
-.lm2-score-mid        { color: var(--text-muted); }
-.lm2-score-low        { color: #666; }
+.lm2-score-very-high {
+    color: var(--fire);
+}
+.lm2-score-high {
+    color: var(--secondary-light);
+}
+.lm2-score-mid {
+    color: var(--text-muted);
+}
+.lm2-score-low {
+    color: #666;
+}
 
 .lm2-aspect-bar {
     height: 10px;
@@ -282,10 +295,18 @@
     transition: width 0.8s ease;
 }
 
-.lm2-fill-very-high { background: linear-gradient(90deg, #d32f2f, #e57373); }
-.lm2-fill-high       { background: linear-gradient(90deg, #B8860B, #DAA520); }
-.lm2-fill-mid        { background: linear-gradient(90deg, #666, #999); }
-.lm2-fill-low        { background: linear-gradient(90deg, #444, #666); }
+.lm2-fill-very-high {
+    background: linear-gradient(90deg, #d32f2f, #e57373);
+}
+.lm2-fill-high {
+    background: linear-gradient(90deg, #b8860b, #daa520);
+}
+.lm2-fill-mid {
+    background: linear-gradient(90deg, #666, #999);
+}
+.lm2-fill-low {
+    background: linear-gradient(90deg, #444, #666);
+}
 
 .lm2-aspect-desc {
     font-size: 0.8rem;
@@ -316,7 +337,7 @@
 }
 
 .lm2-detail-item.lm2-total {
-    background: linear-gradient(135deg, rgba(184,134,11,0.1), rgba(139,0,0,0.05));
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.1), rgba(139, 0, 0, 0.05));
     border-color: var(--secondary);
 }
 
@@ -402,7 +423,7 @@
     font-size: 0.85rem;
     line-height: 1.6;
     border-top: 1px solid var(--border);
-    background: rgba(184,134,11,0.05);
+    background: rgba(184, 134, 11, 0.05);
 }
 
 /* 響應式 */
@@ -410,15 +431,15 @@
     .lm2-four-aspects {
         grid-template-columns: 1fr;
     }
-    
+
     .lm2-detail-grid {
         grid-template-columns: 1fr 1fr;
     }
-    
+
     .lm2-compare-row {
         grid-template-columns: 1fr;
     }
-    
+
     .lm2-compare-method {
         border-right: none;
         border-bottom: 1px solid var(--border);
@@ -432,7 +453,7 @@
 
 /* 特殊格局卡片 */
 .lm2-pattern-card {
-    background: linear-gradient(135deg, rgba(139,0,0,0.08), rgba(184,134,11,0.06)) !important;
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.08), rgba(184, 134, 11, 0.06)) !important;
     border-color: var(--secondary) !important;
 }
 
@@ -497,7 +518,7 @@
     color: var(--text);
     font-style: italic;
     padding: 6px 10px;
-    background: rgba(184,134,11,0.06);
+    background: rgba(184, 134, 11, 0.06);
     border-radius: 4px;
     margin-bottom: 6px;
 }
@@ -550,7 +571,7 @@
 
 .lm2-query-input:focus {
     border-color: var(--secondary);
-    box-shadow: 0 0 0 2px rgba(184,134,11,0.15);
+    box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.15);
 }
 
 .lm2-query-input::placeholder {
@@ -573,7 +594,7 @@
 
 .lm2-query-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(139,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
 }
 
 .lm2-query-result {
@@ -686,7 +707,7 @@
 }
 
 .lm2-pattern-detail-card {
-    background: linear-gradient(135deg, rgba(184,134,11,0.08), rgba(139,0,0,0.04));
+    background: linear-gradient(135deg, rgba(184, 134, 11, 0.08), rgba(139, 0, 0, 0.04));
     border: 1px solid var(--secondary);
     border-radius: 8px;
     padding: 18px;
@@ -736,7 +757,7 @@
     color: var(--secondary-light);
     margin-bottom: 10px;
     padding: 8px 12px;
-    background: rgba(184,134,11,0.06);
+    background: rgba(184, 134, 11, 0.06);
     border-radius: 4px;
 }
 
@@ -758,15 +779,15 @@
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .lm2-pattern-judgment {
         margin-left: 0;
     }
-    
+
     .lm2-query-bar {
         flex-direction: column;
     }
-    
+
     .lm2-query-btn {
         width: 100%;
     }
@@ -778,7 +799,7 @@
 
 /* 格局總覽 */
 .geju-overview {
-    background: linear-gradient(135deg, rgba(139,0,0,0.15), rgba(184,134,11,0.1));
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.15), rgba(184, 134, 11, 0.1));
     border: 1px solid var(--secondary);
     border-radius: var(--radius);
     padding: 28px 24px;
@@ -797,22 +818,22 @@
 }
 
 .geju-normal {
-    background: rgba(46,125,50,0.2);
+    background: rgba(46, 125, 50, 0.2);
     color: var(--wood);
-    border: 1px solid rgba(46,125,50,0.3);
+    border: 1px solid rgba(46, 125, 50, 0.3);
 }
 
 .geju-special {
-    background: rgba(211,47,47,0.2);
+    background: rgba(211, 47, 47, 0.2);
     color: var(--fire);
-    border: 1px solid rgba(211,47,47,0.3);
+    border: 1px solid rgba(211, 47, 47, 0.3);
 }
 
 .geju-main-title {
     font-size: 2.8rem;
     font-weight: 700;
     color: var(--secondary-light);
-    text-shadow: 0 0 20px rgba(218,165,32,0.3);
+    text-shadow: 0 0 20px rgba(218, 165, 32, 0.3);
     letter-spacing: 8px;
     margin-bottom: 8px;
 }
@@ -1003,18 +1024,32 @@
     font-weight: 700;
 }
 
-.ln-favor-喜 { color: var(--wood); }
-.ln-favor-忌 { color: var(--fire); }
-.ln-favor-中 { color: var(--text-muted); }
+.ln-favor-喜 {
+    color: var(--wood);
+}
+.ln-favor-忌 {
+    color: var(--fire);
+}
+.ln-favor-中 {
+    color: var(--text-muted);
+}
 
 .ln-level {
     font-weight: 600;
 }
 
-.ln-tone-good { color: #66bb6a; }
-.ln-tone-caution { color: #ffb74d; }
-.ln-tone-bad { color: #ef5350; }
-.ln-tone-neutral { color: var(--text-muted); }
+.ln-tone-good {
+    color: #66bb6a;
+}
+.ln-tone-caution {
+    color: #ffb74d;
+}
+.ln-tone-bad {
+    color: #ef5350;
+}
+.ln-tone-neutral {
+    color: var(--text-muted);
+}
 
 .ln-tags {
     font-size: 0.8rem;
@@ -1084,9 +1119,15 @@
 }
 
 .ln-inter-clash,
-.ln-inter-punish { color: var(--fire); }
-.ln-inter-harm { color: #ffb74d; }
-.ln-inter-combine { color: var(--wood); }
+.ln-inter-punish {
+    color: var(--fire);
+}
+.ln-inter-harm {
+    color: #ffb74d;
+}
+.ln-inter-combine {
+    color: var(--wood);
+}
 
 .ln-score-line {
     margin-top: 12px;
@@ -1107,9 +1148,15 @@
     padding: 12px 14px;
 }
 
-.ln-god-card.ln-tone-good { border-left: 3px solid #66bb6a; }
-.ln-god-card.ln-tone-caution { border-left: 3px solid #ffb74d; }
-.ln-god-card.ln-tone-neutral { border-left: 3px solid var(--border-light); }
+.ln-god-card.ln-tone-good {
+    border-left: 3px solid #66bb6a;
+}
+.ln-god-card.ln-tone-caution {
+    border-left: 3px solid #ffb74d;
+}
+.ln-god-card.ln-tone-neutral {
+    border-left: 3px solid var(--border-light);
+}
 
 .ln-god-name {
     font-size: 1.05rem;
@@ -1148,8 +1195,8 @@
 .geju-step-result {
     margin-top: 10px;
     padding: 10px 14px;
-    background: rgba(46,125,50,0.1);
-    border: 1px solid rgba(46,125,50,0.2);
+    background: rgba(46, 125, 50, 0.1);
+    border: 1px solid rgba(46, 125, 50, 0.2);
     border-radius: 6px;
     font-size: 1rem;
     font-weight: 600;
@@ -1189,7 +1236,7 @@
 
 .geju-hidden-stem.geju-main-stem {
     font-size: 2rem;
-    text-shadow: 0 0 10px rgba(218,165,32,0.3);
+    text-shadow: 0 0 10px rgba(218, 165, 32, 0.3);
 }
 
 .geju-hidden-type {
@@ -1299,7 +1346,7 @@
     font-style: italic;
     margin-bottom: 8px;
     padding: 8px 10px;
-    background: rgba(184,134,11,0.06);
+    background: rgba(184, 134, 11, 0.06);
     border-radius: 4px;
 }
 
@@ -1309,7 +1356,7 @@
     font-style: italic;
     margin-bottom: 8px;
     padding: 8px 10px;
-    background: rgba(184,134,11,0.05);
+    background: rgba(184, 134, 11, 0.05);
     border-radius: 4px;
 }
 
@@ -1530,7 +1577,7 @@
     color: var(--secondary-light);
     font-style: italic;
     padding: 8px;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 6px;
     line-height: 1.4;
 }
@@ -1585,7 +1632,7 @@
     color: var(--secondary-light);
     line-height: 1.4;
     text-align: left;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
     padding: 8px;
     border-radius: 6px;
 }
@@ -1701,7 +1748,7 @@
 .geju-pattern-analysis {
     margin-top: 10px;
     padding: 10px;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 6px;
     font-size: 0.85rem;
     color: var(--text-muted);
@@ -1762,19 +1809,19 @@
         font-size: 2rem;
         letter-spacing: 4px;
     }
-    
+
     .geju-info-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .geju-ref-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .geju-hidden-grid {
         flex-direction: column;
     }
-    
+
     .geju-hidden-item {
         min-width: auto;
     }
@@ -1824,4 +1871,328 @@
 
 .hidden {
     display: none !important;
+}
+
+/* ============================================================
+   大運卡片與命理學堂
+   ============================================================ */
+.luck-overview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.luck-overview span {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    background: var(--bg);
+}
+.luck-overview strong {
+    color: var(--secondary-light);
+}
+.luck-note {
+    margin-bottom: 18px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+}
+.luck-cycle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+.luck-cycle-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 240px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.025), transparent 55%), var(--bg);
+}
+.luck-cycle-card::after {
+    content: attr(data-favor);
+    position: absolute;
+    right: -4px;
+    bottom: -30px;
+    color: rgba(227, 190, 112, 0.045);
+    font-family: serif;
+    font-size: 8rem;
+    line-height: 1;
+}
+.luck-cycle-card[data-favor='喜'] {
+    border-top-color: rgba(76, 175, 80, 0.7);
+}
+.luck-cycle-card[data-favor='忌'] {
+    border-top-color: rgba(207, 74, 61, 0.8);
+}
+.luck-cycle-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.luck-index {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+}
+.luck-favor {
+    color: var(--secondary-light);
+    font-size: 0.75rem;
+}
+.luck-ganzhi {
+    margin: 8px 0 2px;
+    font-family: serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+.luck-meta {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+}
+.luck-ten-god {
+    margin: 12px 0 8px;
+    color: var(--secondary-light);
+    font-weight: 700;
+}
+.luck-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+.luck-tag {
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--bg-card);
+    color: var(--text-muted);
+    font-size: 0.68rem;
+}
+.luck-combine,
+.luck-three-harmony,
+.luck-three-meeting,
+.luck-stem-combine {
+    color: #7bcf83;
+}
+.luck-clash,
+.luck-punish,
+.luck-stem-control {
+    color: #ef756a;
+}
+.luck-harm,
+.luck-break {
+    color: #e7b765;
+}
+.luck-cycle-card p {
+    position: relative;
+    z-index: 1;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.7;
+}
+
+.ln-luck-context {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 12px;
+    margin: 16px 0;
+    padding: 14px;
+    border-left: 3px solid var(--secondary);
+    background: rgba(182, 138, 58, 0.07);
+}
+.ln-luck-context span {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+.ln-luck-context small {
+    grid-column: 1 / -1;
+    color: var(--text-muted);
+    line-height: 1.65;
+}
+.ln-focus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.ln-focus-grid p {
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--bg);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.65;
+}
+.ln-inter-break,
+.ln-inter-stem-control {
+    color: #e7b765;
+}
+.ln-inter-stem-combine,
+.ln-inter-three-harmony,
+.ln-inter-three-meeting {
+    color: #7bcf83;
+}
+
+.kb-hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(34px, 7vw, 72px);
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 85% 15%, rgba(207, 74, 61, 0.18), transparent 34%),
+        linear-gradient(135deg, #211b17, #151311 70%);
+}
+.kb-hero::after {
+    content: '理';
+    position: absolute;
+    right: 4%;
+    bottom: -28%;
+    color: rgba(227, 190, 112, 0.045);
+    font-family: serif;
+    font-size: clamp(10rem, 28vw, 20rem);
+}
+.kb-eyebrow {
+    color: var(--primary-light);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+}
+.kb-hero h2 {
+    position: relative;
+    z-index: 1;
+    margin: 8px 0 12px;
+    font-family: serif;
+    color: var(--secondary-light);
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    letter-spacing: 0.08em;
+}
+.kb-hero > p:not(.kb-eyebrow) {
+    position: relative;
+    z-index: 1;
+    max-width: 660px;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.8;
+}
+.kb-jump {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+}
+.kb-jump a,
+.kb-source-links a {
+    padding: 7px 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 999px;
+    color: var(--text);
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+.kb-jump a:hover,
+.kb-source-links a:hover {
+    border-color: var(--secondary);
+    color: var(--secondary-light);
+    transform: translateY(-1px);
+}
+.kb-section {
+    scroll-margin-top: 20px;
+    padding: clamp(24px, 5vw, 42px);
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--bg-card);
+}
+.kb-section-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.kb-section-head > span {
+    flex: 0 0 auto;
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--primary-light);
+    color: var(--primary-light);
+    font-family: serif;
+    font-size: 0.82rem;
+    transform: rotate(-2deg);
+}
+.kb-section h3,
+.kb-sources h3 {
+    font-family: serif;
+    color: var(--secondary-light);
+    font-size: clamp(1.35rem, 3vw, 2rem);
+}
+.kb-lead {
+    max-width: 820px;
+    margin: 16px 0 22px;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+.kb-rule-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+.kb-rule-card {
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+}
+.kb-rule-card h4 {
+    color: var(--text);
+    font-size: 0.92rem;
+}
+.kb-rule-card p {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.7;
+}
+.kb-rule-card .kb-formula {
+    margin: 7px 0;
+    color: var(--secondary-light);
+    font-family: serif;
+    font-size: 0.93rem;
+}
+.kb-sources {
+    padding: clamp(24px, 5vw, 42px);
+    border: 1px solid rgba(182, 138, 58, 0.35);
+    border-radius: 16px;
+    background: rgba(182, 138, 58, 0.05);
+}
+.kb-sources p {
+    margin: 12px 0 18px;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+.kb-source-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media (max-width: 760px) {
+    .luck-cycle-grid,
+    .kb-rule-grid,
+    .ln-focus-grid {
+        grid-template-columns: 1fr;
+    }
+    .luck-cycle-card {
+        min-height: auto;
+    }
+    .kb-section-head {
+        align-items: flex-start;
+    }
 }
